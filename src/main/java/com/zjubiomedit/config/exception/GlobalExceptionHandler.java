@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * 请求参数错误
+	 * 请求参数错误 @RequestParam
 	 * Required  parameter is not present
 	 */
 	@ExceptionHandler(MissingServletRequestParameterException.class)

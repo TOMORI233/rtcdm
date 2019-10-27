@@ -4,6 +4,8 @@ import com.zjubiomedit.util.enums.ErrorEnum;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collection;
+
 
 public class Result<T> {
 
@@ -15,7 +17,7 @@ public class Result<T> {
     private String message;
     @Getter
     @Setter
-    private T data;
+    private Object data;
 
     public Result (ErrorEnum error) {
         this.code = error.getErrorCode();
@@ -30,7 +32,7 @@ public class Result<T> {
         this.message = "success";
     }
 
-    public Result(T data) {
+    public Result(Object data) {
         this.code = 0;
         this.message = "success";
         this.data = data;
