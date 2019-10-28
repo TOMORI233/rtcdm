@@ -1,4 +1,4 @@
-package com.zjubiomedit.entity.dict;
+package com.zjubiomedit.entity.Dict;
 
 import lombok.Data;
 import javax.persistence.*;
