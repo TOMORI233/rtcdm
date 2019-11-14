@@ -1,20 +1,24 @@
 package com.zjubiomedit.util;
 
 import com.zjubiomedit.util.enums.ErrorEnum;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Collection;
 
-
+@ApiModel("返回结果")
 public class Result<T> {
 
+    @ApiModelProperty("返回代码")
     @Getter
     @Setter
     private int code;
+    @ApiModelProperty("返回信息")
     @Getter
     @Setter
     private String message;
+    @ApiModelProperty("相关数据")
     @Getter
     @Setter
     private Object data;

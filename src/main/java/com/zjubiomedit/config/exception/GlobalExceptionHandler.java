@@ -5,9 +5,10 @@ import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.enums.ErrorEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,16 +48,21 @@ public class GlobalExceptionHandler {
 	}
 
 	/**
-	 * 请求参数错误 @RequestParam
+	 * 请求参数错误 @requestBody
 	 * Required  parameter is not present
 	 */
-	@ExceptionHandler(MissingServletRequestParameterException.class)
+	@ExceptionHandler(HttpMessageNotReadableException.class)
 	@ResponseStatus(value= HttpStatus.BAD_REQUEST)
-	public Result badRequest(MissingServletRequestParameterException e){
-		logger.error("occurs error when execute method ,message {}",e.getMessage());
+	public Result badRequest(HttpMessageNotReadableException e){
+		logger.error(e.getMessage());
 		return new Result(ErrorEnum.E_501);
 	}
-
+	@ExceptionHandler(InvalidDataAccessApiUsageException.class)
+//	@ResponseStatus(value= HttpStatus.BAD_REQUEST)
+	public Result illegalArgumentRequest(InvalidDataAccessApiUsageException e){
+		logger.error(e.getMessage());
+		return new Result(ErrorEnum.E_501);
+	}
 	/**
 	 * 本系统自定义错误的拦截器
 	 * 拦截到此错误之后,就返回这个类里面的json给前端

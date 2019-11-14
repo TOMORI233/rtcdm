@@ -1,5 +1,6 @@
 package com.zjubiomedit.entity.User;
 
+import com.google.gson.annotations.Expose;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -12,10 +13,11 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 @Data
 public abstract class UserBaseEntity {
+    @Expose
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
-
+    @Expose
     @Column(nullable = false, length = 50)
     private String userName;
     @Column(length = 20)
@@ -23,14 +25,15 @@ public abstract class UserBaseEntity {
     @Column(length = 50)
     private String email;
     private String password;
-    @Column(nullable = false)
-    private Integer status; // 0-正常，1-冻结
 
+    @Column(nullable = false)
+    private Integer status = 0; // 0-正常，1-冻结
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date registerDateTime;
-    private Integer loginCount;
+    private Integer loginCount = 0;
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date lastLoginDateTime;
+
 }

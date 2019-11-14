@@ -17,8 +17,8 @@ public class PatientUserBaseInfo {
     @Column(nullable = false, length = 20)
     private String name;
     @Column(nullable = false)
-    private Integer sex = 0; // 0-未知, 1-男, 2-女，9-未说明
-    @Temporal(TemporalType.TIMESTAMP)
+    private Integer sex = 0; // 0-未知, 1-男, 2-女，9-...
+    @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
     @Column(length = 30)
     private String identityCardNumber;

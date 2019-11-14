@@ -1,28 +1,26 @@
 package com.zjubiomedit.service.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.sun.xml.internal.bind.v2.TODO;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.service.AuthService;
 import com.zjubiomedit.util.Result;
-import com.zjubiomedit.util.Utils;
 import com.zjubiomedit.util.enums.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-
+/**
+ * @author leiyi sheng
+ * @version 1.0
+ * @date 2019-11-04
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
-    DoctorUserAuthsRepository doctorUserAuthsRepository;
+    DoctorUserAuthsRepository doctorUserRepository;
 
     @Override
     public Result authLogin(JsonObject jsonObject) {
@@ -41,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
         if (jsonObject.has("account") && jsonObject.has("password")) {
             String userName = jsonObject.get("account").getAsString();
             String password = jsonObject.get("password").getAsString();
-            Optional<DoctorUserAuths> userAuths = doctorUserAuthsRepository.findByUserName(userName);
+            Optional<DoctorUserAuths> userAuths = doctorUserRepository.findByUserName(userName);
             if (userAuths.isPresent()) {
                 DoctorUserAuths user = userAuths.get();
                 if (user.getStatus() == 0) {
@@ -61,6 +59,4 @@ public class AuthServiceImpl implements AuthService {
             return new Result(ErrorEnum.E_501);
         }
     }
-
-
 }
