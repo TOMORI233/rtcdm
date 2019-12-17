@@ -7,13 +7,11 @@ import com.zjubiomedit.util.JsonUtils;
 import com.zjubiomedit.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "【综合】用户管理")
-@Controller
+@RestController
 @RequestMapping("/user")
 public class UserController {
 
@@ -21,15 +19,13 @@ public class UserController {
     private UserServiceImpl userService;
 
     @ApiOperation(value = "【后台】新建医生账号")
-    @ResponseBody
-    @RequestMapping(value = "/doctor/create", method = RequestMethod.POST)
+    @PostMapping(value = "/doctor/create")
     public Result doctorUserSignin(@RequestBody DoctorUserAuths doctorUserAuths){
         return userService.createDoctorUser(doctorUserAuths);
     }
 
     @ApiOperation(value = "【医生】新建患者账号")
-    @ResponseBody
-    @RequestMapping(value = "/patient/create", method = RequestMethod.POST)
+    @PostMapping(value = "/patient/create")
     public Result patientUserSignin(@RequestBody String signinUser){
         JsonObject jsonObject = JsonUtils.transformJson(signinUser);
         return userService.createPatientUser(jsonObject);
@@ -37,8 +33,7 @@ public class UserController {
 
 
     @ApiOperation(value = "获取患者基本信息", response = Result.class)
-    @ResponseBody
-    @RequestMapping(value = "/patient/detail", method = RequestMethod.POST)
+    @PostMapping(value = "/patient/detail")
     public Result patientUserDetail(@RequestBody String jsonString){
         JsonObject jsonObject = JsonUtils.transformJson(jsonString);
         return null;

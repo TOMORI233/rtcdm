@@ -44,6 +44,8 @@ public class AuthServiceImpl implements AuthService {
                 DoctorUserAuths user = userAuths.get();
                 if (user.getStatus() == 0) {
                     if (user.getPassword().equals(password)) {
+                        user.setLoginCount(user.getLoginCount() + 1);
+                        doctorUserRepository.save(user);
                         return new Result(user);
                     }
                     else {
