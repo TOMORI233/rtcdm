@@ -1,6 +1,6 @@
 package com.zjubiomedit.service;
 
-import com.google.gson.JsonObject;
+import com.zjubiomedit.dto.DoctorEndDto.DoctorUserLogin;
 import com.zjubiomedit.util.Result;
 
 /**
@@ -12,5 +12,5 @@ public interface AuthService {
     /**
      * 登录表单提交
      */
-    Result authLogin(JsonObject jsonObject);
+    Result authLogin(DoctorUserLogin doctorUserLogin);
 }
