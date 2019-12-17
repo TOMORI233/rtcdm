@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class DoctorUserAuths extends UserBaseEntity{
 
     @Expose
-    @Column(length = 50, nullable = false, columnDefinition = "nvarchar")
+    @Column(columnDefinition = "nvarchar(50) not null")
     private String name; // 医生姓名"name
     @Column(nullable = false)
     private Integer auth;  // 0-个人账号， 1-集体账号

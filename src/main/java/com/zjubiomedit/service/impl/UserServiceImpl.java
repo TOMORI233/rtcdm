@@ -9,14 +9,11 @@ import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
 import com.zjubiomedit.entity.User.PatientUserBaseInfo;
-import com.zjubiomedit.entity.User.QDoctorUserAuths;
 import com.zjubiomedit.service.UserService;
 import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
-import com.zjubiomedit.util.enums.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 

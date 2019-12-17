@@ -8,7 +8,7 @@ public interface UserService {
     /**
      * 新建医生账号
      */
-     Result createDoctorUser(DoctorUserAuths jsonObject);
+    Result createDoctorUser(DoctorUserAuths jsonObject);
 
     /**
      * 医生平台新建患者账号，不需要审核，创建默认管理计划
