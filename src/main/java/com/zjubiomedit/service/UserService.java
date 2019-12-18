@@ -1,6 +1,7 @@
 package com.zjubiomedit.service;
 
 import com.google.gson.JsonObject;
+import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatient;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.util.Result;
 
@@ -8,12 +9,12 @@ public interface UserService {
     /**
      * 新建医生账号
      */
-    Result createDoctorUser(DoctorUserAuths jsonObject);
+    Result createDoctorUser(DoctorUserAuths doctorUserAuths);
 
     /**
      * 医生平台新建患者账号，不需要审核，创建默认管理计划
      */
-    Result createPatientUser(JsonObject jsonObject);
+    Result createPatientUser(DoctorCreatePatient doctorCreatePatient);
 
     /**
      * 修改医生账号信息
@@ -30,4 +31,8 @@ public interface UserService {
      */
     Result getDoctorUserByOrgCode(JsonObject jsonObject);
 
+    /**
+     *  根据医生id获取其管理的患者的基本信息
+     */
+    Result getPatientBaseInfo(JsonObject jsonObject);
 }

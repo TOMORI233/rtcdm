@@ -6,12 +6,14 @@ import com.google.gson.JsonObject;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
+import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatient;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
 import com.zjubiomedit.entity.User.PatientUserBaseInfo;
 import com.zjubiomedit.service.UserService;
 import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,13 +45,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result createPatientUser(JsonObject jsonObject) {
-        Gson gson = new Gson();
-        PatientUserAuths patientUserAuths = gson.fromJson(jsonObject, PatientUserAuths.class);
-        PatientUserBaseInfo patientUserBaseInfo = gson.fromJson(jsonObject, PatientUserBaseInfo.class);
-        PatientUserAuths userAuths = patientUserAuthsRepository.save(patientUserAuths);
-        patientUserBaseInfo.setUserID(userAuths.getUserID());
-        PatientUserBaseInfo userBaseInfo = patientUserBaseInfoRepository.save(patientUserBaseInfo);
-        return new Result(userBaseInfo);
+    public Result getPatientBaseInfo(JsonObject jsonObject) {
+
+        return null;
+    }
+
+    @Override
+    public Result createPatientUser(DoctorCreatePatient doctorCreatePatient) {
+//        Gson gson = new Gson();
+//        PatientUserAuths patientUserAuths = gson.fromJson(jsonObject, PatientUserAuths.class);
+//        PatientUserBaseInfo patientUserBaseInfo = gson.fromJson(jsonObject, PatientUserBaseInfo.class);
+//        PatientUserAuths userAuths = patientUserAuthsRepository.save(patientUserAuths);
+//        patientUserBaseInfo.setUserID(userAuths.getUserID());
+//        PatientUserBaseInfo userBaseInfo = patientUserBaseInfoRepository.save(patientUserBaseInfo);
+//        return new Result(userBaseInfo);
+
+        PatientUserAuths patientUserAuths = new PatientUserAuths();
+        PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
+        BeanUtils.copyProperties(doctorCreatePatient, patientUserAuths);
+        BeanUtils.copyProperties(doctorCreatePatient, patientUserBaseInfo);
+        patientUserAuthsRepository.save(patientUserAuths);
+        return new Result(patientUserBaseInfoRepository.save(patientUserBaseInfo));
     }
 }
