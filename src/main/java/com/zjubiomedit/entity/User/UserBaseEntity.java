@@ -27,7 +27,7 @@ public abstract class UserBaseEntity {
     private String password;
 
     @Column(nullable = false)
-    private Integer status = 0; // 0-正常，1-冻结
+    private Integer status = 0; // 0-正常，1-冻结，10-待审核
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date registerDateTime;
