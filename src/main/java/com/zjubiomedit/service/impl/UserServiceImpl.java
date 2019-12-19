@@ -3,10 +3,12 @@ package com.zjubiomedit.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.zjubiomedit.dao.Platform.ManagedPatientIndexRepository;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatient;
+import com.zjubiomedit.entity.Platform.ManagedPatientIndex;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
 import com.zjubiomedit.entity.User.PatientUserBaseInfo;
@@ -29,6 +31,8 @@ public class UserServiceImpl implements UserService {
     PatientUserAuthsRepository patientUserAuthsRepository;
     @Autowired
     PatientUserBaseInfoRepository patientUserBaseInfoRepository;
+    @Autowired
+    ManagedPatientIndexRepository managedPatientIndexRepository;
 
     @Override
     public Result createDoctorUser(DoctorUserAuths doctorUserAuths) {
@@ -62,9 +66,13 @@ public class UserServiceImpl implements UserService {
 
         PatientUserAuths patientUserAuths = new PatientUserAuths();
         PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
+        ManagedPatientIndex managedPatientIndex = new ManagedPatientIndex();
         BeanUtils.copyProperties(doctorCreatePatient, patientUserAuths);
         BeanUtils.copyProperties(doctorCreatePatient, patientUserBaseInfo);
+        BeanUtils.copyProperties(doctorCreatePatient, managedPatientIndex);
         patientUserAuthsRepository.save(patientUserAuths);
-        return new Result(patientUserBaseInfoRepository.save(patientUserBaseInfo));
+        PatientUserBaseInfo userBaseInfo = patientUserBaseInfoRepository.save(patientUserBaseInfo);
+        managedPatientIndexRepository.save(managedPatientIndex);
+        return new Result(userBaseInfo);
     }
 }

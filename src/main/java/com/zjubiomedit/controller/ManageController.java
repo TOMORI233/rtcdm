@@ -35,8 +35,10 @@ public class ManageController {
     @ApiOperation(value = "【医生】审核（通过/拒绝）患者", response = Result.class)
     @PutMapping(value = "/register/audit")
     public Result patientRegisterAudit(@RequestParam Long serialNo){
-        return manageService.reviewRegister(serialNo);
+//        return manageService.reviewRegister(serialNo);
+        return new Result(null);
     }
+
     /**
      *  管理
      */

@@ -1,6 +1,8 @@
 package com.zjubiomedit.service.impl;
 
+import com.zjubiomedit.dao.Platform.ManagedPatientIndexRepository;
 import com.zjubiomedit.dao.Platform.ManagementApplicationRepository;
+import com.zjubiomedit.dto.DoctorEndDto.ReviewRegisterDto;
 import com.zjubiomedit.dto.PagingDto.PagingDto;
 import com.zjubiomedit.entity.Platform.ManagementApplicationReview;
 import com.zjubiomedit.service.ManageService;
@@ -17,6 +19,8 @@ public class ManageServiceImpl implements ManageService {
 
     @Autowired
     ManagementApplicationRepository managementApplicationRepository;
+    @Autowired
+    ManagedPatientIndexRepository managedPatientIndexRepository;
 
     @Override
     public Page<ManagementApplicationReview> pagingPatientRegister(PagingDto pagingDto) {
@@ -29,8 +33,22 @@ public class ManageServiceImpl implements ManageService {
     }
 
     @Override
-    public Result reviewRegister(Long serialNo) {
-        //审核
-        return new Result();
+    public Result reviewRegister(ReviewRegisterDto reviewRegisterDto) {
+//        //审核
+//        Optional<ManagementApplicationReview> registerRecord = managementApplicationRepository.findBySerialNo(serialNo);
+//        if(registerRecord.isPresent()){
+//            //审核通过
+//            //将该患者信息导入ManagedPatientIndex列表
+//            managedPatientIndexRepository.save();
+//            //PatientUserAuths表中该患者status置0
+//
+//            //将该申请记录从ManagementApplicationReview表中删除
+//
+//        }
+//        else{
+//            return new Result("记录不存在"); //枚举类待存
+//        }
+//        return new Result();
+        return null;
     }
 }

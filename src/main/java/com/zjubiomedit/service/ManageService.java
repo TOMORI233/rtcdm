@@ -1,5 +1,6 @@
 package com.zjubiomedit.service;
 
+import com.zjubiomedit.dto.DoctorEndDto.ReviewRegisterDto;
 import com.zjubiomedit.dto.PagingDto.PagingDto;
 import com.zjubiomedit.entity.Platform.ManagementApplicationReview;
 import com.zjubiomedit.util.Result;
@@ -17,5 +18,5 @@ public interface ManageService {
     /**
      *  审核患者
      */
-    Result reviewRegister(Long serialNo);
+    Result reviewRegister(ReviewRegisterDto reviewRegisterDto);
 }

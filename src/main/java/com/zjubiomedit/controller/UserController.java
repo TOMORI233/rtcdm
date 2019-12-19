@@ -31,6 +31,10 @@ public class UserController {
     @ApiOperation(value = "【医生】新建患者账号")
     @PostMapping(value = "/patient/create")
     public Result patientUserSignin(@RequestBody DoctorCreatePatient doctorCreatePatient) {
+        //在PatientUserAuths表中创建该患者
+
+        //将创建的患者信息与创建医生绑定
+
         return userService.createPatientUser(doctorCreatePatient);
     }
 

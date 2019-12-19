@@ -13,7 +13,7 @@ public class PatientUserBaseInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long serialNo;
     @Column(nullable = false)
-    private Long doctorID;
+    private Long userID;
     @Column(nullable = false, length = 20)
     private String name;
     @Column(nullable = false)

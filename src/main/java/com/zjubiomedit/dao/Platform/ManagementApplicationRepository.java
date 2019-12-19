@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 /**
  * @author leiyi sheng
  * @version 1.0
@@ -12,4 +14,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ManagementApplicationRepository extends JpaRepository<ManagementApplicationReview, Long> {
     Page<ManagementApplicationReview> findByDoctorID(Long doctorID, Pageable pageable);
+
+    Optional<ManagementApplicationReview> findBySerialNo(Long serialNo);
 }
