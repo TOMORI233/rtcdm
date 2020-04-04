@@ -1,7 +1,7 @@
 package com.zjubiomedit.controller;
 
 import com.google.gson.JsonObject;
-import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatient;
+import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatientDto;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.service.impl.UserServiceImpl;
 import com.zjubiomedit.util.JsonUtils;
@@ -30,12 +30,8 @@ public class UserController {
 
     @ApiOperation(value = "【医生】新建患者账号")
     @PostMapping(value = "/patient/create")
-    public Result patientUserSignin(@RequestBody DoctorCreatePatient doctorCreatePatient) {
-        //在PatientUserAuths表中创建该患者
-
-        //将创建的患者信息与创建医生绑定
-
-        return userService.createPatientUser(doctorCreatePatient);
+    public Result patientUserSignin(@RequestBody DoctorCreatePatientDto doctorCreatePatientDto) {
+        return userService.createPatientUser(doctorCreatePatientDto);
     }
 
 

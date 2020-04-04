@@ -9,7 +9,6 @@ import com.zjubiomedit.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "字典管理")
@@ -26,7 +25,7 @@ public class DictController {
     }
 
     @ApiOperation(value = "【患者】获取行政区划列表", response = Result.class)
-    @RequestMapping(value = "/division/list")
+    @GetMapping(value = "/division/list")
     public Result divisionList(){
         return dictService.getDivision();
     }

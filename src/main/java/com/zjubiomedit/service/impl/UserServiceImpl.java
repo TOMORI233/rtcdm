@@ -7,7 +7,7 @@ import com.zjubiomedit.dao.Platform.ManagedPatientIndexRepository;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
-import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatient;
+import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatientDto;
 import com.zjubiomedit.entity.Platform.ManagedPatientIndex;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result createPatientUser(DoctorCreatePatient doctorCreatePatient) {
+    public Result createPatientUser(DoctorCreatePatientDto doctorCreatePatientDto) {
 //        Gson gson = new Gson();
 //        PatientUserAuths patientUserAuths = gson.fromJson(jsonObject, PatientUserAuths.class);
 //        PatientUserBaseInfo patientUserBaseInfo = gson.fromJson(jsonObject, PatientUserBaseInfo.class);
@@ -67,9 +67,10 @@ public class UserServiceImpl implements UserService {
         PatientUserAuths patientUserAuths = new PatientUserAuths();
         PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
         ManagedPatientIndex managedPatientIndex = new ManagedPatientIndex();
-        BeanUtils.copyProperties(doctorCreatePatient, patientUserAuths);
-        BeanUtils.copyProperties(doctorCreatePatient, patientUserBaseInfo);
-        BeanUtils.copyProperties(doctorCreatePatient, managedPatientIndex);
+        BeanUtils.copyProperties(doctorCreatePatientDto, patientUserAuths);
+        BeanUtils.copyProperties(doctorCreatePatientDto, patientUserBaseInfo);
+        BeanUtils.copyProperties(doctorCreatePatientDto, managedPatientIndex);
+        managedPatientIndex.setPatientID(doctorCreatePatientDto.getUserID());
         patientUserAuthsRepository.save(patientUserAuths);
         PatientUserBaseInfo userBaseInfo = patientUserBaseInfoRepository.save(patientUserBaseInfo);
         managedPatientIndexRepository.save(managedPatientIndex);

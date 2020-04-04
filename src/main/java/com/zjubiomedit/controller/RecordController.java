@@ -1,7 +1,7 @@
 package com.zjubiomedit.controller;
 
 import com.google.gson.JsonObject;
-import com.zjubiomedit.dto.PatientEndDto.RecordCommit;
+import com.zjubiomedit.dto.PatientEndDto.RecordCommitDto;
 import com.zjubiomedit.service.impl.RecordServiceImpl;
 import com.zjubiomedit.util.JsonUtils;
 import com.zjubiomedit.util.Result;
@@ -30,8 +30,8 @@ public class RecordController {
      */
     @ApiOperation(value = "【综合】新增数据记录", response = Result.class)
     @RequestMapping(value = "/commit", method = RequestMethod.POST)
-    public Result dataCommit(@RequestBody RecordCommit recordCommit){
-        return recordService.createDataRecord(recordCommit);
+    public Result dataCommit(@RequestBody RecordCommitDto recordCommitDto){
+        return recordService.createDataRecord(recordCommitDto);
     }
 
     @ApiOperation(value = "【综合】获取时间区间数据记录", response = Result.class)

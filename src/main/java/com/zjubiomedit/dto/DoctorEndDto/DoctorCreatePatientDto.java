@@ -5,9 +5,9 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class DoctorCreatePatient {
+public class DoctorCreatePatientDto {
     // PatientUserAuths
-    private Long userID; // 用户ID
+    private Long userID; // 患者ID
     private String userName; // 账号名
     private String mobilePhone;
     private String email;
@@ -32,6 +32,7 @@ public class DoctorCreatePatient {
     private Long doctorID; // 关联医生ID
     private String patientFeature; //如有多个，之间用逗号分隔，例如：老年人，肥胖，残疾人
     private Integer manageClass; //哪种疾病
+    private Integer manageStatus; // 0-管理中，1-向上转诊，2-向下转诊已，9-终止管理
     private String orgCode; //管理该患者的机构
     private Long hospitalID; // 关联所属医院集体账号
     private String hospitalName; //关联所属医院名称，即医院集体账号名称

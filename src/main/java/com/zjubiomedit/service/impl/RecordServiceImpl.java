@@ -3,7 +3,7 @@ package com.zjubiomedit.service.impl;
 import com.google.gson.Gson;
 import com.zjubiomedit.config.exception.CommonJsonException;
 import com.zjubiomedit.dao.Record.*;
-import com.zjubiomedit.dto.PatientEndDto.RecordCommit;
+import com.zjubiomedit.dto.PatientEndDto.RecordCommitDto;
 import com.zjubiomedit.entity.Record.*;
 import com.zjubiomedit.service.RecordService;
 import com.zjubiomedit.util.Result;
@@ -70,37 +70,37 @@ public class RecordServiceImpl implements RecordService {
     }
 
     @Override
-    public Result createDataRecord(RecordCommit recordCommit) {
+    public Result createDataRecord(RecordCommitDto recordCommitDto) {
         try {
-            int type = recordCommit.getType();
+            int type = recordCommitDto.getType();
             Gson gson = new Gson();
             switch (type) {
                 case Utils.CAT:
-                    CATRecord catRecord = gson.fromJson(recordCommit.getData(), CATRecord.class);
+                    CATRecord catRecord = gson.fromJson(recordCommitDto.getData(), CATRecord.class);
                     CATRecord catSave = catRecordRepository.save(catRecord);
                     return new Result(catSave);
                 case Utils.DISCOMFORT:
-                    DiscomfortRecord discomfortRecord = gson.fromJson(recordCommit.getData(), DiscomfortRecord.class);
+                    DiscomfortRecord discomfortRecord = gson.fromJson(recordCommitDto.getData(), DiscomfortRecord.class);
                     DiscomfortRecord discomfortSave = discomfortRecordRepository.save(discomfortRecord);
                     return new Result(discomfortSave);
                 case Utils.DRUG:
-                    DrugRecord drugRecord = gson.fromJson(recordCommit.getData(), DrugRecord.class);
+                    DrugRecord drugRecord = gson.fromJson(recordCommitDto.getData(), DrugRecord.class);
                     DrugRecord drugSave = drugRecordRepository.save(drugRecord);
                     return new Result(drugSave);
                 case Utils.HAD:
-                    HADRecord hadRecord = gson.fromJson(recordCommit.getData(), HADRecord.class);
+                    HADRecord hadRecord = gson.fromJson(recordCommitDto.getData(), HADRecord.class);
                     HADRecord hadSave = hadRecordRepository.save(hadRecord);
                     return new Result(hadSave);
                 case Utils.PEF:
-                    PEFRecord pefRecord = gson.fromJson(recordCommit.getData(), PEFRecord.class);
+                    PEFRecord pefRecord = gson.fromJson(recordCommitDto.getData(), PEFRecord.class);
                     PEFRecord pefSave = pefRecordRepository.save(pefRecord);
                     return new Result(pefSave);
                 case Utils.WEIGHT:
-                    WeightRecord weightRecord = gson.fromJson(recordCommit.getData(), WeightRecord.class);
+                    WeightRecord weightRecord = gson.fromJson(recordCommitDto.getData(), WeightRecord.class);
                     WeightRecord weightSave = weightRecordRepository.save(weightRecord);
                     return new Result(weightSave);
                 case Utils.SMWT:
-                    SMWTRecord smwtRecord = gson.fromJson(recordCommit.getData(), SMWTRecord.class);
+                    SMWTRecord smwtRecord = gson.fromJson(recordCommitDto.getData(), SMWTRecord.class);
                     SMWTRecord smwtSave = smwtRecordRepository.save(smwtRecord);
                     return new Result(smwtSave);
                 default:

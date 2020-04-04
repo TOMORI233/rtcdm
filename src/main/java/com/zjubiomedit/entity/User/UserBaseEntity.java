@@ -24,6 +24,7 @@ public abstract class UserBaseEntity {
     private String mobilePhone;
     @Column(length = 50)
     private String email;
+    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
@@ -31,6 +32,7 @@ public abstract class UserBaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date registerDateTime;
+    @Column(nullable = false)
     private Integer loginCount = 0;
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate

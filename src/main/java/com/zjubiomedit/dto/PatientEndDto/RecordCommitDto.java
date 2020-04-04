@@ -8,7 +8,7 @@ import lombok.Data;
  * @date 2019-11-05
  */
 @Data
-public class RecordCommit {
+public class RecordCommitDto {
     private int type;
     //JSON.STRINGIFY 产生的，根据不同的type解析为不同的record entity
     private String data;

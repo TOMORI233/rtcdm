@@ -1,6 +1,6 @@
 package com.zjubiomedit.service;
 
-import com.zjubiomedit.dto.PatientEndDto.RecordCommit;
+import com.zjubiomedit.dto.PatientEndDto.RecordCommitDto;
 import com.zjubiomedit.util.Result;
 
 /**
@@ -12,5 +12,5 @@ public interface RecordService {
     /**
      *  新增数据记录
      */
-    public Result createDataRecord(RecordCommit recordCommit);
+    public Result createDataRecord(RecordCommitDto recordCommitDto);
 }

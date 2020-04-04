@@ -1,6 +1,5 @@
 package com.zjubiomedit.service;
 
-import com.zjubiomedit.dto.DoctorEndDto.DoctorUserLogin;
 import com.zjubiomedit.util.Result;
 
 /**
@@ -12,5 +11,5 @@ public interface AuthService {
     /**
      * 登录表单提交
      */
-    Result authLogin(DoctorUserLogin doctorUserLogin);
+    Result authLogin(String userName, String password);
 }

@@ -1,7 +1,7 @@
 package com.zjubiomedit.service.impl;
 
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
-import com.zjubiomedit.dto.DoctorEndDto.DoctorUserLogin;
+import com.zjubiomedit.dto.DoctorEndDto.DoctorUserLoginDto;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.service.AuthService;
 import com.zjubiomedit.util.Result;
@@ -23,7 +23,7 @@ public class AuthServiceImpl implements AuthService {
     DoctorUserAuthsRepository doctorUserRepository;
 
     @Override
-    public Result authLogin(DoctorUserLogin doctorUserLogin) {
+    public Result authLogin(String userName, String password) {
 //        Subject currentUser = SecurityUtils.getSubject();
 //        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 //        try {
@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
 //        }
         // 未使用shiro的登陆方式，暂用，其他调试成功添加shiro
         // TODO SHIRO 认证，授权
-        System.out.println(doctorUserLogin);
+//        System.out.println(doctorUserLoginDto);
 
 //        if (jsonObject.has("account") && jsonObject.has("password")) {
 //            String userName = jsonObject.get("account").getAsString();
@@ -61,8 +61,6 @@ public class AuthServiceImpl implements AuthService {
 //            return new Result(ErrorEnum.E_501);
 //        }
 
-        String userName = doctorUserLogin.getUserName();
-        String password = doctorUserLogin.getPassword();
         if(userName == null || password == null){
             return new Result(ErrorEnum.E_501);
         }
@@ -74,7 +72,12 @@ public class AuthServiceImpl implements AuthService {
                     if (user.getPassword().equals(password)) {
                         user.setLoginCount(user.getLoginCount() + 1);
                         doctorUserRepository.save(user);
-                        return new Result(user);
+                        DoctorUserLoginDto doctorUserLoginDto = new DoctorUserLoginDto();
+                        doctorUserLoginDto.setUserName(userName);
+                        doctorUserLoginDto.setPassword(password);
+                        doctorUserLoginDto.setAuth(user.getAuth());
+                        doctorUserLoginDto.setOrgCode(user.getOrgCode());
+                        return new Result(doctorUserLoginDto);
                     }
                     else {
                         return new Result(ErrorEnum.E_10002);

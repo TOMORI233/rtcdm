@@ -1,9 +1,12 @@
 package com.zjubiomedit.dao.Platform;
 
+import com.zjubiomedit.dto.PagingDto.RegisterPagingDto;
 import com.zjubiomedit.entity.Platform.ManagementApplicationReview;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -13,7 +16,25 @@ import java.util.Optional;
  * @date 2019-11-04
  */
 public interface ManagementApplicationRepository extends JpaRepository<ManagementApplicationReview, Long> {
-    Page<ManagementApplicationReview> findByDoctorID(Long doctorID, Pageable pageable);
-
     Optional<ManagementApplicationReview> findBySerialNo(Long serialNo);
+
+    @Query(value = "select " +
+            "new com.zjubiomedit.dto.PagingDto.RegisterPagingDto" +
+            "(pub.name, pub.sex, pub.dateOfBirth, pub.profession, pub.education, pub.height, pub.weight, pua.registerDateTime, mar.serialNo, mar.doctorID, mar.diagnosis) " +
+            "from PatientUserBaseInfo pub, PatientUserAuths pua, ManagementApplicationReview mar " +
+            "where mar.hospitalID = :hospitalID " +
+            "and mar.status = 0 " +
+            "and mar.patientID = pua.userID " +
+            "and mar.patientID = pub.userID")
+    Page<RegisterPagingDto> findByHospitalID(@Param("hospitalID") Long hospitalID, Pageable pageable);
+
+    @Query(value = "select " +
+            "new com.zjubiomedit.dto.PagingDto.RegisterPagingDto" +
+            "(pub.name, pub.sex, pub.dateOfBirth, pub.profession, pub.education, pub.height, pub.weight, pua.registerDateTime, mar.serialNo, mar.doctorID, mar.diagnosis) " +
+            "from PatientUserBaseInfo pub, PatientUserAuths pua, ManagementApplicationReview mar " +
+            "where mar.doctorID = :doctorID " +
+            "and mar.status = 0 " +
+            "and mar.patientID = pua.userID " +
+            "and mar.patientID = pub.userID")
+    Page<RegisterPagingDto> findByDoctorID(@Param("doctorID") Long doctorID, Pageable pageable);
 }

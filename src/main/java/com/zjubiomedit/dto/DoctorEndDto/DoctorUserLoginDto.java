@@ -8,7 +8,9 @@ import lombok.Data;
  * @date 2019-11-05
  */
 @Data
-public class DoctorUserLogin {
+public class DoctorUserLoginDto {
     private String userName;
     private String password;
+    private Integer auth;
+    private String orgCode;
 }
