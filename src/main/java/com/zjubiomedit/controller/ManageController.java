@@ -5,6 +5,8 @@ import com.zjubiomedit.dto.DoctorEndDto.RefferalBackDto;
 import com.zjubiomedit.service.impl.ManageServiceImpl;
 import com.zjubiomedit.util.Result;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +31,10 @@ public class ManageController {
      */
     @ApiOperation(value = "【医生】获取待审核患者信息（分页）", response = Result.class)
     @GetMapping(value = "/register/page")
-    public Result patientRegisterList(@RequestParam(value = "doctorID", required = false) Long doctorID, //权限设计待更改
-                                      @RequestParam(value = "hospitalID") Long hospitalID,
+    public Result patientRegisterList(@RequestParam(value = "viewerID") Long viewerID,
                                       @RequestParam(value = "pageIndex") Integer pageIndex,
                                       @RequestParam(value = "pageOffset") Integer pageOffset){
-        return manageService.pagingPatientRegister(hospitalID, doctorID, pageIndex, pageOffset);
+        return manageService.pagingPatientRegister(viewerID, pageIndex, pageOffset);
     }
 
     @ApiOperation(value = "【医生】审核（通过/拒绝）患者", response = Result.class)
@@ -55,37 +56,57 @@ public class ManageController {
     /**
      *  管理
      */
-    @ApiOperation(value = "【医生】获取患者管理索引信息（分页）", response = Result.class)
-    @GetMapping(value = "/index/page")
-    public Result patientManageIndexPage(@RequestParam(value = "viewerID") Long viewerID){
-        return manageService.pagingPatientManageIndex(viewerID);
+    @ApiOperation(value = "【医生】获取个人管理的患者管理索引信息（分页）", response = Result.class)
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", value = "0-全部，1-管理中，2-转出，3-转入", required = true, defaultValue = "0")})
+    @GetMapping(value = "/index/page/doctor")
+    public Result doctorManageIndexPage(@RequestParam(value = "doctorID") Long doctorID,
+                                        @RequestParam(value = "pageIndex") Integer pageIndex,
+                                        @RequestParam(value = "pageOffset") Integer pageOffset,
+                                        Integer type){
+        return manageService.pagingDoctorManageIndex(doctorID, pageIndex, pageOffset, type);
+    }
+
+    @ApiOperation(value = "【医生】获取某院患者管理索引信息（分页）", response = Result.class)
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", value = "0-全部，1-管理中，2-转出，3-转入", required = true, defaultValue = "0")})
+    @GetMapping(value = "/index/page/hospital")
+    public Result hospitalManageIndexPage(@RequestParam(value = "orgCode") String orgCode,
+                                          @RequestParam(value = "pageIndex") Integer pageIndex,
+                                          @RequestParam(value = "pageOffset") Integer pageOffset,
+                                          Integer type){
+        return manageService.pagingHospitalManageIndex(orgCode, pageIndex, pageOffset, type);
     }
 
     @ApiOperation(value = "【医生】获取下属医院列表", response = Result.class)
     @GetMapping(value = "/index/hospital")
-    public Result hospitalSelectList(@RequestParam(value = "viewerID") Long viewerID){
-        return manageService.getHospitalList(viewerID);
+    public Result hospitalSelectList(@RequestParam(value = "orgCode") String orgCode){
+        return manageService.getHospitalList(orgCode);
     }
 
-//    @ApiOperation(value = "【医生】获取下属医院列表", response = Result.class)
-//    @GetMapping(value = "/index/hospital")
-//    public Result hospitalSelectList(@RequestParam(value = "viewerID") Long viewerID){
-//        return manageService.getHospitalList(viewerID);
-//    }
+    @ApiOperation(value = "【医生】获取个人管理患者总数/管理中人数/转出人数/转入人数", response = Result.class)
+    @GetMapping(value = "/index/count/doctor")
+    public Result doctorPatientCount(@RequestParam(value = "doctorID") Long doctorID){
+        return manageService.getDoctorPatientCount(doctorID);
+    }
+
+    @ApiOperation(value = "【医生】获取某医院管理患者总数/管理中人数/转出人数/转入人数", response = Result.class)
+    @GetMapping(value = "/index/count/hospital")
+    public Result hospitalPatientCount(@RequestParam(value = "orgCode") String orgCode){
+        return manageService.getHospitalPatientCount(orgCode);
+    }
 
     /**
      * 随访
      */
     @ApiOperation(value = "【医生】获取随访总人数/待随访人数/已随访人数", response = Result.class)
     @GetMapping(value = "/followup/count")
-    public Result patientfollowupCount(@RequestParam(value = "viewerID") Long viewerID){
+    public Result patientFollowupCount(@RequestParam(value = "viewerID") Long viewerID){
         return manageService.getFollowupCount(viewerID);
         //返回dto:totalcount,tofollowup,alreadyfollowup
     }
 
     @ApiOperation(value = "【医生】获取随访列表（分页）", response = Result.class)
     @GetMapping(value = "/followup/page")
-    public Result patientfollowupPage(@RequestParam(value = "viewerID") Long viewerID,
+    public Result patientFollowupPage(@RequestParam(value = "viewerID") Long viewerID,
                                       @RequestParam(value = "startTime", required = false) Date startTime,
                                       @RequestParam(value = "endTime", required = false) Date endTime){
         return manageService.pagingFollowup(viewerID, startTime, endTime);
@@ -93,7 +114,7 @@ public class ManageController {
 
     @ApiOperation(value = "【医生】忽略随访", response = Result.class)
     @PutMapping(value = "/followup/ignore")
-    public Result patientfollowupIgnore(@RequestParam(value = "serialNo") Long serialNo){
+    public Result patientFollowupIgnore(@RequestParam(value = "serialNo") Long serialNo){
         return manageService.ignoreFollowup(serialNo);
     }
 
@@ -139,7 +160,7 @@ public class ManageController {
      */
     @ApiOperation(value = "【医生】获取转入待审核人数", response = Result.class)
     @GetMapping(value = "/referral/count")
-    public Result patientRefferalCount(@RequestParam(value = "viewerID") Long viewerID){
+    public Result patientReferralCount(@RequestParam(value = "viewerID") Long viewerID){
         return manageService.getReferralCount(viewerID);
     }
 

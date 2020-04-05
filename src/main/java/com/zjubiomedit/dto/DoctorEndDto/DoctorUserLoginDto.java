@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 public class DoctorUserLoginDto {
     private String userName;
-    private String password;
     private Integer auth;
     private String orgCode;
 }

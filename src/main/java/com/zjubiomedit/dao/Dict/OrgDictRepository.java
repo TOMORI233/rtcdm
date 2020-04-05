@@ -12,4 +12,6 @@ import java.util.List;
  */
 public interface OrgDictRepository extends CrudRepository<OrgDict, Long> {
     List<OrgDict> findByDivisionCodeAndIsValid(String divisionCode, Integer isValid);
+
+    List<OrgDict> findByParentOrgCodeAndIsValid(String parentOrgCode, Integer isValid);
 }

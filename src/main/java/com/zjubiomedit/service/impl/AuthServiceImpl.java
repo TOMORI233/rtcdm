@@ -5,6 +5,7 @@ import com.zjubiomedit.dto.DoctorEndDto.DoctorUserLoginDto;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.service.AuthService;
 import com.zjubiomedit.util.Result;
+import com.zjubiomedit.util.Utils;
 import com.zjubiomedit.util.enums.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,13 +69,12 @@ public class AuthServiceImpl implements AuthService {
             Optional<DoctorUserAuths> userAuths = doctorUserRepository.findByUserName(userName);
             if (userAuths.isPresent()) {
                 DoctorUserAuths user = userAuths.get();
-                if (user.getStatus() == 0) {
+                if (user.getStatus() == Utils.USER_ACTIVE) {
                     if (user.getPassword().equals(password)) {
                         user.setLoginCount(user.getLoginCount() + 1);
                         doctorUserRepository.save(user);
                         DoctorUserLoginDto doctorUserLoginDto = new DoctorUserLoginDto();
                         doctorUserLoginDto.setUserName(userName);
-                        doctorUserLoginDto.setPassword(password);
                         doctorUserLoginDto.setAuth(user.getAuth());
                         doctorUserLoginDto.setOrgCode(user.getOrgCode());
                         return new Result(doctorUserLoginDto);

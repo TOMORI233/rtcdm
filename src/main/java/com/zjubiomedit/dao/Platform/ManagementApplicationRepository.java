@@ -22,19 +22,10 @@ public interface ManagementApplicationRepository extends JpaRepository<Managemen
             "new com.zjubiomedit.dto.PagingDto.RegisterPagingDto" +
             "(pub.name, pub.sex, pub.dateOfBirth, pub.profession, pub.education, pub.height, pub.weight, pua.registerDateTime, mar.serialNo, mar.doctorID, mar.diagnosis) " +
             "from PatientUserBaseInfo pub, PatientUserAuths pua, ManagementApplicationReview mar " +
-            "where mar.hospitalID = :hospitalID " +
+            "where (mar.doctorID = :viewerID or mar.hospitalID = :viewerID) " +
             "and mar.status = 0 " +
+            "and pua.status = 10 " +
             "and mar.patientID = pua.userID " +
             "and mar.patientID = pub.userID")
-    Page<RegisterPagingDto> findByHospitalID(@Param("hospitalID") Long hospitalID, Pageable pageable);
-
-    @Query(value = "select " +
-            "new com.zjubiomedit.dto.PagingDto.RegisterPagingDto" +
-            "(pub.name, pub.sex, pub.dateOfBirth, pub.profession, pub.education, pub.height, pub.weight, pua.registerDateTime, mar.serialNo, mar.doctorID, mar.diagnosis) " +
-            "from PatientUserBaseInfo pub, PatientUserAuths pua, ManagementApplicationReview mar " +
-            "where mar.doctorID = :doctorID " +
-            "and mar.status = 0 " +
-            "and mar.patientID = pua.userID " +
-            "and mar.patientID = pub.userID")
-    Page<RegisterPagingDto> findByDoctorID(@Param("doctorID") Long doctorID, Pageable pageable);
+    Page<RegisterPagingDto> findByViewerID(@Param("viewerID") Long viewerID, Pageable pageable);
 }

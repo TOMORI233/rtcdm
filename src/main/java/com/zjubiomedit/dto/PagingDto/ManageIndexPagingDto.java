@@ -7,27 +7,17 @@ import java.util.Date;
 
 @Data
 @AllArgsConstructor
-public class AlertPagingDto {
-    // AlertRecord
-    private Long serialNo;
-    private Long patientID;
-    private String alertType;
-    private String alertName;
-    private String alertReason;
-    private String alertMessage;
-    private Date alertTime;
-    private Integer status;
-    private Long followUpSerialNo;
-    private String ignoreReason;
-    private Long executeDoctorID;
-    private Date executeTime;
+public class ManageIndexPagingDto {
     // PatientUserBaseInfo
     private String patientName; // name
     private Integer sex;
     private Date dateOfBirth;
     // ManagedPatientIndex
+    private Long patientID;
     private Integer manageStatus;
     private Integer complianceRate;
+    private Date manageStartDateTime;
+    private Date terminationDateTime;
     // DoctorUserAuths
     private String doctorName; // name
     private String orgCode;

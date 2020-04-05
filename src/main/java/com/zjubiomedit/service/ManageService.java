@@ -13,7 +13,7 @@ public interface ManageService {
      *  审核患者分页
      * @return
      */
-    Result pagingPatientRegister(Long hospitalID, Long doctorID, Integer pageIndex, Integer pageOffset);
+    Result pagingPatientRegister(Long viewerID, Integer pageIndex, Integer pageOffset);
 
     /**
      *  审核患者
@@ -24,9 +24,7 @@ public interface ManageService {
 
     Result pagingPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset);
 
-    Result pagingPatientManageIndex(Long viewerID);
-
-    Result getHospitalList(Long viewerID);
+    Result getHospitalList(String orgCode);
 
     Result getPatientAlertHist(Long patientID, Integer pageIndex, Integer pageOffset);
 
@@ -47,4 +45,12 @@ public interface ManageService {
     Result pagingFollowup(Long viewerID, Date startTime, Date endTime);
 
     Result ignoreFollowup(Long serialNo);
+
+    Result pagingDoctorManageIndex(Long doctorID, Integer pageIndex, Integer pageOffset, Integer type);
+
+    Result pagingHospitalManageIndex(String orgCode, Integer pageIndex, Integer pageOffset, Integer type);
+
+    Result getDoctorPatientCount(Long doctorID);
+
+    Result getHospitalPatientCount(String orgCode);
 }
