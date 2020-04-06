@@ -32,4 +32,6 @@ public interface DictService {
     Result getOrgByDivision(JsonObject jsonObject);
 
     Result getHospitalList(String orgCode);
+
+    Result getOrgNameByOrgCode(String orgCode);
 }

@@ -48,4 +48,6 @@ public interface ReferralRecordRepository extends JpaRepository<ReferralRecord, 
     Page<ReferralReviewPagingDto> findReferralReviewPageByDoctorID(Long doctorID, Pageable pageable);
 
     ReferralRecord findBySerialNo(Long serialNo);
+
+    ReferralRecord findByPatientID(Long patientID);
 }

@@ -1,9 +1,8 @@
 package com.zjubiomedit.service.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.zjubiomedit.dao.Platform.COPDManageDetailRepository;
 import com.zjubiomedit.dao.Platform.ManagedPatientIndexRepository;
+import com.zjubiomedit.dao.Platform.ReferralRecordRepository;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
@@ -37,7 +36,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     ManagedPatientIndexRepository managedPatientIndexRepository;
     @Autowired
+    COPDManageDetailRepository copdManageDetailRepository;
+    @Autowired
     DoctorUserAuthsRepository doctorUserAuthsRepository;
+    @Autowired
+    ReferralRecordRepository referralRecordRepository;
 
     @Override
     public Result createDoctorUser(DoctorUserAuths doctorUserAuths) {
@@ -46,17 +49,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result getDoctorUserByOrgCode(JsonObject jsonObject) {
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        String orgCode = jsonObject.get("orgCode").getAsString();
-        List<DoctorUserAuths> list = doctorUserRepository.findByOrgCodeAndStatus(orgCode, Utils.USER_ACTIVE);
-        return new Result(gson.toJson(list));
-    }
-
-    @Override
-    public Result getPatientBaseInfo(JsonObject jsonObject) {
-
-        return null;
+    public Result getPatientBaseInfo(Long patientID) {
+        return new Result(patientUserBaseInfoRepository.findByUserID(patientID));
     }
 
     @Override
@@ -72,6 +66,21 @@ public class UserServiceImpl implements UserService {
         else {
             return new Result(ErrorEnum.E_400);
         }
+    }
+
+    @Override
+    public Result getPatientManageDetail(Long patientID) {
+        return new Result(managedPatientIndexRepository.findByPatientID(patientID));
+    }
+
+    @Override
+    public Result getPatientReferralDetail(Long patientID) {
+        return new Result(referralRecordRepository.findByPatientID(patientID));
+    }
+
+    @Override
+    public Result getDoctorNameByDoctorID(Long doctorID) {
+        return new Result(doctorUserAuthsRepository.findDoctorNameByDoctorID(doctorID));
     }
 
     @Override

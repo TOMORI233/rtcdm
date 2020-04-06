@@ -85,4 +85,9 @@ public class DictServiceImpl implements DictService {
         List<OrgDict> list = orgDictRepository.findByParentOrgCodeAndIsValid(orgCode, Utils.VALID);
         return new Result(list);
     }
+
+    @Override
+    public Result getOrgNameByOrgCode(String orgCode) {
+        return new Result(orgDictRepository.findOrgNameByOrgCode(orgCode));
+    }
 }

@@ -1,7 +1,8 @@
 package com.zjubiomedit.dao.User;
 
 import com.zjubiomedit.entity.User.PatientUserBaseInfo;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PatientUserBaseInfoRepository extends CrudRepository<PatientUserBaseInfo, Long> {
+public interface PatientUserBaseInfoRepository extends JpaRepository<PatientUserBaseInfo, Long> {
+    PatientUserBaseInfo findByUserID(Long userID);
 }
