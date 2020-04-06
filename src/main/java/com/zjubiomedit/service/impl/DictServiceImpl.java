@@ -79,4 +79,10 @@ public class DictServiceImpl implements DictService {
         return new Result(orgDicts);
 //        return new Result(gson.toJson(orgDicts))
     }
+
+    @Override
+    public Result getHospitalList(String orgCode) {
+        List<OrgDict> list = orgDictRepository.findByParentOrgCodeAndIsValid(orgCode, Utils.VALID);
+        return new Result(list);
+    }
 }

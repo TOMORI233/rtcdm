@@ -20,7 +20,7 @@ public class FollowupPlan extends PlatformBaseEntity {
     @Column(nullable = false, length = 100)
     private String followUpType;
     @Column(nullable = false)
-    private Integer status;
+    private Integer status = 0;
     @Column(length = 100)
     private String memo;
     @Temporal(TemporalType.TIMESTAMP)

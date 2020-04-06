@@ -30,4 +30,6 @@ public interface DictService {
      * 根据行政区划代码获取该地区医疗机构列表
      */
     Result getOrgByDivision(JsonObject jsonObject);
+
+    Result getHospitalList(String orgCode);
 }

@@ -9,10 +9,7 @@ import com.zjubiomedit.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "【综合】用户管理")
 @RestController
@@ -24,13 +21,13 @@ public class UserController {
 
     @ApiOperation(value = "【后台】新建医生账号")
     @PostMapping(value = "/doctor/create")
-    public Result doctorUserSignin(@RequestBody DoctorUserAuths doctorUserAuths){
+    public Result doctorUserSignIn(@RequestBody DoctorUserAuths doctorUserAuths){
         return userService.createDoctorUser(doctorUserAuths);
     }
 
     @ApiOperation(value = "【医生】新建患者账号")
     @PostMapping(value = "/patient/create")
-    public Result patientUserSignin(@RequestBody DoctorCreatePatientDto doctorCreatePatientDto) {
+    public Result patientUserSignIn(@RequestBody DoctorCreatePatientDto doctorCreatePatientDto) {
         return userService.createPatientUser(doctorCreatePatientDto);
     }
 
@@ -40,6 +37,12 @@ public class UserController {
     public Result patientUserDetail(@RequestBody String jsonString){
         JsonObject jsonObject = JsonUtils.transformJson(jsonString);
         return userService.getPatientBaseInfo(jsonObject);
+    }
+
+    @ApiOperation(value = "【医院】获取本院医生列表", response = Result.class)
+    @GetMapping(value = "/doctor/list")
+    public Result doctorSelectList(@RequestParam(value = "hospitalID") Long hospitalID){
+        return userService.getDoctorList(hospitalID);
     }
 
 }

@@ -1,29 +1,17 @@
 package com.zjubiomedit.service.impl;
 
-import com.zjubiomedit.dao.Dict.OrgDictRepository;
-import com.zjubiomedit.dao.Platform.AlertRecordRepository;
-import com.zjubiomedit.dao.Platform.COPDManageDetailRepository;
-import com.zjubiomedit.dao.Platform.ManagedPatientIndexRepository;
-import com.zjubiomedit.dao.Platform.ManagementApplicationRepository;
+import com.zjubiomedit.dao.Platform.*;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
-import com.zjubiomedit.dto.DoctorEndDto.DoctorListDto;
-import com.zjubiomedit.dto.DoctorEndDto.ManagedPatientCountDto;
-import com.zjubiomedit.dto.DoctorEndDto.ReferralApplyDot;
-import com.zjubiomedit.dto.DoctorEndDto.RefferalBackDto;
-import com.zjubiomedit.dto.PagingDto.AlertPagingDto;
-import com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto;
-import com.zjubiomedit.dto.PagingDto.RegisterPagingDto;
-import com.zjubiomedit.entity.Dict.OrgDict;
-import com.zjubiomedit.entity.Platform.AlertRecord;
-import com.zjubiomedit.entity.Platform.COPDManageDetail;
-import com.zjubiomedit.entity.Platform.ManagedPatientIndex;
-import com.zjubiomedit.entity.Platform.ManagementApplicationReview;
+import com.zjubiomedit.dto.DoctorEndDto.*;
+import com.zjubiomedit.dto.PagingDto.*;
+import com.zjubiomedit.entity.Platform.*;
 import com.zjubiomedit.entity.User.PatientUserAuths;
 import com.zjubiomedit.service.ManageService;
 import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
 import com.zjubiomedit.util.enums.ErrorEnum;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,7 +39,11 @@ public class ManageServiceImpl implements ManageService {
     @Autowired
     COPDManageDetailRepository copdManageDetailRepository;
     @Autowired
-    OrgDictRepository orgDictRepository;
+    FollowupRecordRepository followupRecordRepository;
+    @Autowired
+    FollowupPlanRepository followupPlanRepository;
+    @Autowired
+    ReferralRecordRepository referralRecordRepository;
 
     @Override
     public Result pagingPatientRegister(Long viewerID, Integer pageIndex, Integer pageOffset) {
@@ -106,31 +98,10 @@ public class ManageServiceImpl implements ManageService {
     }
 
     @Override
-    public Result getDoctorList(Long hospitalID){
-        Optional<Integer> auth = doctorUserAuthsRepository.findAuthById(hospitalID);
-        if(auth.isPresent()){
-            if(auth.get().equals(Utils.PERSONAL)){
-                return new Result(ErrorEnum.E_401);
-            }
-            List<DoctorListDto> doctorList = doctorUserAuthsRepository.findByHospitalId(hospitalID);
-            return new Result(doctorList);
-        }
-        else {
-            return new Result(ErrorEnum.E_400);
-        }
-    }
-
-    @Override
     public Result pagingPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset) {
         Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
         Page<AlertPagingDto> page = alertRecordRepository.findAlertPageByViewerID(viewerID, pageable);
         return new Result(page);
-    }
-
-    @Override
-    public Result getHospitalList(String orgCode) {
-        List<OrgDict> list = orgDictRepository.findByParentOrgCodeAndIsValid(orgCode, Utils.VALID);
-        return new Result(list);
     }
 
     @Override
@@ -156,37 +127,54 @@ public class ManageServiceImpl implements ManageService {
     }
 
     @Override
-    public Result getReferralCount(Long viewerID) {
+    public Result pagingReferralReview(Long viewerID, Integer pageIndex, Integer pageOffset) {
+        Optional<Integer> auth = doctorUserAuthsRepository.findAuthById(viewerID);
+        if(auth.isPresent()){
+            Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
+            Page<ReferralReviewPagingDto> page;
+            if(auth.get().equals(Utils.GROUP)){
+                page = referralRecordRepository.findReferralReviewPageByHospitalID(viewerID, pageable);
+            }
+            else {
+                page = referralRecordRepository.findReferralReviewPageByDoctorID(viewerID, pageable);
+            }
+            return new Result(page);
+        }
+        else {
+            return new Result(ErrorEnum.E_400);
+        }
+    }
+
+    @Override
+    public Result applyReferral(ReferralApplyDto referralApplyDto) {
+        ReferralRecord newRecord = new ReferralRecord();
+        BeanUtils.copyProperties(referralApplyDto, newRecord);
+        referralRecordRepository.save(newRecord);
         return null;
     }
 
     @Override
-    public Result pagingReferralReview(Long viewerID) {
-        return null;
+    public Result getFollowupCount(Long viewerID, Date startDate, Date endDate) {
+        Long toFollowupCount = followupPlanRepository.CountByViewerIDAndStatusAndDate(viewerID, Utils.FOLLOW_PLAN_TODO, startDate, endDate);
+        Long followedupCount = followupPlanRepository.CountByViewerIDAndStatusAndDate(viewerID, Utils.FOLLOW_PLAN_FINISHED, startDate, endDate);
+        Long abolishedCount = followupPlanRepository.CountByViewerIDAndStatusAndDate(viewerID, Utils.FOLLOW_PLAN_ABOLISHED, startDate, endDate);
+        Long totalCount = toFollowupCount + followedupCount + abolishedCount;
+        FollowupCountDto followupCountDto = new FollowupCountDto(totalCount, toFollowupCount, followedupCount, abolishedCount);
+        return new Result(followupCountDto);
     }
 
     @Override
-    public Result applyReferral(ReferralApplyDot referralApplyDot) {
-        return null;
-    }
-
-    @Override
-    public Result backReferral(RefferalBackDto refferalBackDto) {
-        return null;
-    }
-
-    @Override
-    public Result getFollowupCount(Long viewerID) {
-        return null;
-    }
-
-    @Override
-    public Result pagingFollowup(Long viewerID, Date startTime, Date endTime) {
-        return null;
+    public Result pagingFollowup(Long viewerID, Integer status, Date startDate, Date endDate, Integer pageIndex, Integer pageOffset) {
+        Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.ASC, "planDate");
+        Page<FollowupPagingDto> page = followupPlanRepository.findFollowupPageByViewerIDAndStatusAndTime(viewerID, status, startDate, endDate, pageable);
+        return new Result(page);
     }
 
     @Override
     public Result ignoreFollowup(Long serialNo) {
+        FollowupPlan thisPlan = followupPlanRepository.findBySerialNo(serialNo);
+        thisPlan.setStatus(Utils.FOLLOW_PLAN_ABOLISHED);
+        followupPlanRepository.save(thisPlan);
         return null;
     }
 
@@ -275,6 +263,80 @@ public class ManageServiceImpl implements ManageService {
         Long totalCount = managingCount + referralOutCount + referralInCount;
         ManagedPatientCountDto patientCountDto = new ManagedPatientCountDto(totalCount, managingCount, referralOutCount, referralInCount);
         return new Result(patientCountDto);
+    }
+
+    @Override
+    public Result getPatientList(Long viewerID) {
+        List<PatientListDto> patientList = managedPatientIndexRepository.findPatientByViewerID(viewerID);
+        return new Result(patientList);
+    }
+
+    @Override
+    public Result createFollowupPlan(FollowupPlanCreateDto followupPlanCreateDto) {
+        FollowupPlan thisPlan = new FollowupPlan();
+        thisPlan.setPatientID(followupPlanCreateDto.getPatientID());
+        thisPlan.setPlanDate(followupPlanCreateDto.getPlanDate());
+        thisPlan.setFollowUpType(followupPlanCreateDto.getFollowUpType());
+        thisPlan.setStatus(Utils.FOLLOW_PLAN_TODO);
+        followupPlanRepository.save(thisPlan);
+        return new Result(thisPlan);
+    }
+
+    @Override
+    public Result refuseReferral(Long serialNo, Long reviewerID, String refuseReason) {
+        ReferralRecord thisRecord = referralRecordRepository.findBySerialNo(serialNo);
+        thisRecord.setReviewerID(reviewerID);
+        thisRecord.setStatus(Utils.REFERRAL_FAILED);
+        thisRecord.setReviewDateTime(new Date());
+        thisRecord.setRefuseReason(refuseReason);
+        referralRecordRepository.save(thisRecord);
+        return null;
+    }
+
+    @Override
+    public Result approveReferral(Long serialNo, Long reviewerID, Long doctorID) {
+        ReferralRecord thisRecord = referralRecordRepository.findBySerialNo(serialNo);
+        thisRecord.setReviewerID(reviewerID);
+        thisRecord.setStatus(Utils.REFERRAL_APPROVED);
+        thisRecord.setReviewDateTime(new Date());
+        ManagedPatientIndex thisPatient = managedPatientIndexRepository.findByPatientID(thisRecord.getPatientID());
+        thisPatient.setManageStatus(thisRecord.getReferralType());
+        referralRecordRepository.save(thisRecord);
+        managedPatientIndexRepository.save(thisPatient);
+        return null;
+    }
+
+    @Override
+    public Result backReferral(Long serialNo, String receipt) {
+        ReferralRecord thisRecord = referralRecordRepository.findBySerialNo(serialNo);
+        thisRecord.setStatus(Utils.REFERRAL_OVER);
+        thisRecord.setEndDateTime(new Date());
+        thisRecord.setReceipt(receipt);
+        ManagedPatientIndex thisPatient = managedPatientIndexRepository.findByPatientID(thisRecord.getPatientID());
+        thisPatient.setManageStatus(Utils.MANAGE_PROCESSING);
+        referralRecordRepository.save(thisRecord);
+        managedPatientIndexRepository.save(thisPatient);
+        return null;
+    }
+
+    @Override
+    public Result recordPatientFollowup(FollowupRecordDto followupRecordDto) {
+        FollowupRecord newFollowupRecord = new FollowupRecord();
+        BeanUtils.copyProperties(followupRecordDto, newFollowupRecord);
+        FollowupRecord thisFollowup = followupRecordRepository.save(newFollowupRecord);
+        if(followupRecordDto.getAlertSerialNo() != null){
+            AlertRecord thisAlert = alertRecordRepository.findBySerialNo(followupRecordDto.getAlertSerialNo());
+            thisAlert.setExecuteDoctorID(followupRecordDto.getExecuteDoctorID());
+            thisAlert.setFollowUpSerialNo(thisFollowup.getSerialNo());
+            thisAlert.setStatus(Utils.ALERT_FOLLOWEDUP);
+            alertRecordRepository.save(thisAlert);
+        }
+        if(followupRecordDto.getPlanSerialNo() != null){
+            FollowupPlan thisPlan = followupPlanRepository.findBySerialNo(followupRecordDto.getPlanSerialNo());
+            thisPlan.setStatus(Utils.FOLLOW_PLAN_FINISHED);
+            followupPlanRepository.save(thisPlan);
+        }
+        return null;
     }
 
 }

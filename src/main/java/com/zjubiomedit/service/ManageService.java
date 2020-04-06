@@ -1,7 +1,8 @@
 package com.zjubiomedit.service;
 
-import com.zjubiomedit.dto.DoctorEndDto.ReferralApplyDot;
-import com.zjubiomedit.dto.DoctorEndDto.RefferalBackDto;
+import com.zjubiomedit.dto.DoctorEndDto.FollowupPlanCreateDto;
+import com.zjubiomedit.dto.DoctorEndDto.FollowupRecordDto;
+import com.zjubiomedit.dto.DoctorEndDto.ReferralApplyDto;
 import com.zjubiomedit.util.Result;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,7 @@ public interface ManageService {
      */
     Result reviewRegister(Long serialNo, Integer status, Long doctorID, Long reviewerID, String refuseReason);
 
-    Result getDoctorList(Long hospitalID);
-
     Result pagingPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset);
-
-    Result getHospitalList(String orgCode);
 
     Result getPatientAlertHist(Long patientID, Integer pageIndex, Integer pageOffset);
 
@@ -32,17 +29,13 @@ public interface ManageService {
 
     Result ignoreAlert(Long serialNo, String ignoreReason, Long executeDoctorID);
 
-    Result getReferralCount(Long viewerID);
+    Result pagingReferralReview(Long viewerID, Integer pageIndex, Integer pageOffset);
 
-    Result pagingReferralReview(Long viewerID);
+    Result applyReferral(ReferralApplyDto referralApplyDto);
 
-    Result applyReferral(ReferralApplyDot referralApplyDot);
+    Result getFollowupCount(Long viewerID, Date startDate, Date endDate);
 
-    Result backReferral(RefferalBackDto refferalBackDto);
-
-    Result getFollowupCount(Long viewerID);
-
-    Result pagingFollowup(Long viewerID, Date startTime, Date endTime);
+    Result pagingFollowup(Long viewerID, Integer status, Date startDate, Date endDate, Integer pageIndex, Integer pageOffset);
 
     Result ignoreFollowup(Long serialNo);
 
@@ -53,4 +46,16 @@ public interface ManageService {
     Result getDoctorPatientCount(Long doctorID);
 
     Result getHospitalPatientCount(String orgCode);
+
+    Result getPatientList(Long viewerID);
+
+    Result createFollowupPlan(FollowupPlanCreateDto followupPlanCreateDto);
+
+    Result refuseReferral(Long serialNo, Long reviewerID, String refuseReason);
+
+    Result approveReferral(Long serialNo, Long reviewerID, Long doctorID);
+
+    Result backReferral(Long serialNo, String receipt);
+
+    Result recordPatientFollowup(FollowupRecordDto followupRecordDto);
 }

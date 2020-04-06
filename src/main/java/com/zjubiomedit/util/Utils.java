@@ -45,10 +45,11 @@ public class Utils {
     //ALERT STATUS
     public static final int ALERT_UNPROCESSED = 0;
     public static final int ALERT_FOLLOWEDUP = 1;
-    public static final int ALERT_IGNORED = 2;
+    public static final int ALERT_REFERRAL = 2;
+    public static final int ALERT_IGNORED = 3;
     //FOLLOWUP PLAN STATUS
-    public static final int FOLLOW_PLAN_NOT_STARTED = 0;
-    public static final int FOLLOW_PLAN_PROCESSING = 1;
+    public static final int FOLLOW_PLAN_TODO = 0;
+    public static final int FOLLOW_PLAN_FINISHED = 1;
     public static final int FOLLOW_PLAN_ABOLISHED = 2;
     //FOLLOWUP RECORD STATUS
     public static final int FOLLOW_RECORD_FAILED = 0;
@@ -66,7 +67,7 @@ public class Utils {
     public static final int MANAGE_PROCESSING = 0;
     public static final int MANAGE_REFERRAL_UP = 1;
     public static final int MANAGE_REFERRAL_DOWN = 2;
-    public static final int MANAGE_TERMINATED = 3;
+    public static final int MANAGE_TERMINATED = 9;
     //MANAGE INDEX ACTIVE DEGREE
     public static final int MANAGE_INACTIVE = 0;
     public static final int MANAGE_ACTIVE= 1;
@@ -79,6 +80,14 @@ public class Utils {
     public static final int MANAGE_PLAN_NOT_STARTED = 0;
     public static final int MANAGE_PLAN_PROCESSING = 1;
     public static final int MANAGE_PLAN_ABOLISHED = 2;
+    //REFERRAL TYPE
+    public static final int REFERRAL_TYPE_UP = MANAGE_REFERRAL_UP;
+    public static final int REFERRAL_TYPE_DOWN = MANAGE_REFERRAL_DOWN;
+    //REFERRAL PURPOSE
+    public static final int REFERRAL_PURPOSE_HOSPITALIZED = 0;
+    public static final int REFERRAL_PURPOSE_OUTPATIENT = 1;
+    public static final int REFERRAL_PURPOSE_CHECKUP= 2;
+    public static final int REFERRAL_PURPOSE_OTHERS = 3;
     //REFERRAL STATUS
     public static final int REFERRAL_UNREVIEWED = 0;
     public static final int REFERRAL_APPROVED = 1;

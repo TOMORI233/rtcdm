@@ -2,7 +2,6 @@ package com.zjubiomedit.entity.Platform;
 
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +32,7 @@ public class FollowupRecord extends PlatformBaseEntity{
     @Column(length = 1300)
     private String content;  //  json
     @Column(nullable = false)
-    private Integer executeDoctorID;
+    private Long executeDoctorID;
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date executeTime; // 实际执行时间

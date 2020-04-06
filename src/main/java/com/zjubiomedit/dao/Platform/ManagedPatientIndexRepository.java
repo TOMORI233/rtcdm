@@ -1,5 +1,6 @@
 package com.zjubiomedit.dao.Platform;
 
+import com.zjubiomedit.dto.DoctorEndDto.PatientListDto;
 import com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto;
 import com.zjubiomedit.entity.Platform.ManagedPatientIndex;
 import org.springframework.data.domain.Page;
@@ -7,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  * @author leiyi sheng
@@ -185,5 +188,13 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and rr.status = 1")
     Long CountReferralInByOrgCode(@Param("orgCode") String orgCode);
 
+    @Query(value = "select new com.zjubiomedit.dto.DoctorEndDto.PatientListDto" +
+            "(pub.userID, pub.name) " +
+            "from PatientUserBaseInfo pub " +
+            "where pub.userID in " +
+            "(select patientID from ManagedPatientIndex " +
+            "where doctorID = :viewerID or hospitalID = :viewerID)")
+    List<PatientListDto> findPatientByViewerID(Long viewerID);
 
+    ManagedPatientIndex findByPatientID(Long patientID);
 }

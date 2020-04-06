@@ -35,4 +35,6 @@ public interface UserService {
      *  根据医生id获取其管理的患者的基本信息
      */
     Result getPatientBaseInfo(JsonObject jsonObject);
+
+    Result getDoctorList(Long hospitalID);
 }

@@ -8,6 +8,7 @@ import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatientDto;
+import com.zjubiomedit.dto.DoctorEndDto.DoctorListDto;
 import com.zjubiomedit.entity.Platform.ManagedPatientIndex;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
@@ -15,11 +16,13 @@ import com.zjubiomedit.entity.User.PatientUserBaseInfo;
 import com.zjubiomedit.service.UserService;
 import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
+import com.zjubiomedit.util.enums.ErrorEnum;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -33,6 +36,8 @@ public class UserServiceImpl implements UserService {
     PatientUserBaseInfoRepository patientUserBaseInfoRepository;
     @Autowired
     ManagedPatientIndexRepository managedPatientIndexRepository;
+    @Autowired
+    DoctorUserAuthsRepository doctorUserAuthsRepository;
 
     @Override
     public Result createDoctorUser(DoctorUserAuths doctorUserAuths) {
@@ -52,6 +57,21 @@ public class UserServiceImpl implements UserService {
     public Result getPatientBaseInfo(JsonObject jsonObject) {
 
         return null;
+    }
+
+    @Override
+    public Result getDoctorList(Long hospitalID){
+        Optional<Integer> auth = doctorUserAuthsRepository.findAuthById(hospitalID);
+        if(auth.isPresent()){
+            if(auth.get().equals(Utils.PERSONAL)){
+                return new Result(ErrorEnum.E_401);
+            }
+            List<DoctorListDto> doctorList = doctorUserAuthsRepository.findByHospitalId(hospitalID);
+            return new Result(doctorList);
+        }
+        else {
+            return new Result(ErrorEnum.E_400);
+        }
     }
 
     @Override
