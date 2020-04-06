@@ -19,13 +19,13 @@ public class UserController {
 
     @ApiOperation(value = "【后台】新建医生账号")
     @PostMapping(value = "/doctor/create")
-    public Result doctorUserSignIn(@RequestBody DoctorUserAuths doctorUserAuths){
+    public Result doctorUserSignUp(@RequestBody DoctorUserAuths doctorUserAuths){
         return userService.createDoctorUser(doctorUserAuths);
     }
 
     @ApiOperation(value = "【医生】新建患者账号")
     @PostMapping(value = "/patient/create")
-    public Result patientUserSignIn(@RequestBody DoctorCreatePatientDto doctorCreatePatientDto) {
+    public Result patientUserSignUp(@RequestBody DoctorCreatePatientDto doctorCreatePatientDto) {
         return userService.createPatientUser(doctorCreatePatientDto);
     }
 
