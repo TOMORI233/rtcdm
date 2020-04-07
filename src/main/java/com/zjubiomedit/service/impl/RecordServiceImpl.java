@@ -10,7 +10,14 @@ import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
 import com.zjubiomedit.util.enums.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author leiyi sheng
@@ -103,6 +110,79 @@ public class RecordServiceImpl implements RecordService {
                     SMWTRecord smwtRecord = gson.fromJson(recordCommitDto.getData(), SMWTRecord.class);
                     SMWTRecord smwtSave = smwtRecordRepository.save(smwtRecord);
                     return new Result(smwtSave);
+                default:
+                    return new Result(ErrorEnum.E_10006);
+            }
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10005);
+        }
+    }
+
+    @Override
+    public Result fetchRecordList(Integer type, Long patientID, Date startDate, Date endDate) {
+        try {
+            switch (type) {
+                case Utils.CAT:
+                    List<CATRecord> catRecordList = catRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    return new Result(catRecordList);
+                case Utils.DISCOMFORT:
+                    List<DiscomfortRecord> discomfortRecordList = discomfortRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    return new Result(discomfortRecordList);
+                case Utils.DRUG:
+                    List<DrugRecord> drugRecordList = drugRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    return new Result(drugRecordList);
+                case Utils.HAD:
+                    List<HADRecord> hadRecordList = hadRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    return new Result(hadRecordList);
+                case Utils.PEF:
+                    List<PEFRecord> pefRecordList = pefRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    return new Result(pefRecordList);
+                case Utils.WEIGHT:
+                    List<WeightRecord> weightRecordList = weightRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    return new Result(weightRecordList);
+                case Utils.SMWT:
+                    List<SMWTRecord> smwtRecordList = smwtRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    return new Result(smwtRecordList);
+                default:
+                    return new Result(ErrorEnum.E_10006);
+            }
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10005);
+        }
+    }
+
+    @Override
+    public Result fetchRecordPage(Integer type, Long patientID, Date startDate, Date endDate, Integer pageIndex, Integer pageOffset) {
+        return null;
+    }
+
+    @Override
+    public Result fetchLatestRecord(Integer type, Long patientID, Integer n) {
+        try {
+            // 通过page的方式取前n条数据
+            Pageable pageable = PageRequest.of(0, n, Sort.Direction.DESC, "recordTime");
+            switch (type) {
+                case Utils.CAT:
+                    Page<CATRecord> catRecordList = catRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(catRecordList);
+                case Utils.DISCOMFORT:
+                    Page<DiscomfortRecord> discomfortRecordList = discomfortRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(discomfortRecordList);
+                case Utils.DRUG:
+                    Page<DrugRecord> drugRecordList = drugRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(drugRecordList);
+                case Utils.HAD:
+                    Page<HADRecord> hadRecordList = hadRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(hadRecordList);
+                case Utils.PEF:
+                    Page<PEFRecord> pefRecordList = pefRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(pefRecordList);
+                case Utils.WEIGHT:
+                    Page<WeightRecord> weightRecordList = weightRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(weightRecordList);
+                case Utils.SMWT:
+                    Page<SMWTRecord> smwtRecordList = smwtRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(smwtRecordList);
                 default:
                     return new Result(ErrorEnum.E_10006);
             }

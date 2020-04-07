@@ -142,15 +142,6 @@ public class ManageController {
         return manageService.pagingPatientAlert(viewerID, pageIndex, pageOffset);
     }
 
-    @ApiOperation(value = "【医生/医院】获取某患者预警历史", response = Result.class)
-    @GetMapping(value = "/alert/list")
-    public Result patientAlertPage(@RequestParam(value = "patientID") Long patientID,
-                                   @RequestParam(value = "pageIndex") Integer pageIndex,
-                                   @RequestParam(value = "pageOffset") Integer pageOffset){
-        //单个患者预警记录表
-        return manageService.getPatientAlertHist(patientID, pageIndex, pageOffset);
-    }
-
     @ApiOperation(value = "【医生/医院】获取预警患者数量", response = Result.class)
     @GetMapping(value = "/alert/count")
     public Result patientAlertCount(@RequestParam(value = "viewerID") Long viewerID){

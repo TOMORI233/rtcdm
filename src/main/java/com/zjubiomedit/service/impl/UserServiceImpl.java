@@ -1,13 +1,13 @@
 package com.zjubiomedit.service.impl;
 
-import com.zjubiomedit.dao.Platform.COPDManageDetailRepository;
-import com.zjubiomedit.dao.Platform.ManagedPatientIndexRepository;
-import com.zjubiomedit.dao.Platform.ReferralRecordRepository;
+import com.zjubiomedit.dao.Platform.*;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatientDto;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorListDto;
+import com.zjubiomedit.entity.Platform.AlertRecord;
+import com.zjubiomedit.entity.Platform.FollowupRecord;
 import com.zjubiomedit.entity.Platform.ManagedPatientIndex;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
@@ -18,6 +18,10 @@ import com.zjubiomedit.util.Utils;
 import com.zjubiomedit.util.enums.ErrorEnum;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,6 +45,12 @@ public class UserServiceImpl implements UserService {
     DoctorUserAuthsRepository doctorUserAuthsRepository;
     @Autowired
     ReferralRecordRepository referralRecordRepository;
+    @Autowired
+    ManagementPlanRepository managementPlanRepository;
+    @Autowired
+    AlertRecordRepository alertRecordRepository;
+    @Autowired
+    FollowupRecordRepository followupRecordRepository;
 
     @Override
     public Result createDoctorUser(DoctorUserAuths doctorUserAuths) {
@@ -81,6 +91,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result getDoctorNameByDoctorID(Long doctorID) {
         return new Result(doctorUserAuthsRepository.findDoctorNameByDoctorID(doctorID));
+    }
+
+    @Override
+    public Result getPatientManagePlanDetail(Long patientID) {
+        return new Result(managementPlanRepository.findByPatientID(patientID));
+    }
+
+    @Override
+    public Result getPatientAlertDetail(Long patientID, Integer pageIndex, Integer pageOffset) {
+        Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
+        Page<AlertRecord> page = alertRecordRepository.findByPatientID(patientID, pageable);
+        return new Result(page);
+    }
+
+    @Override
+    public Result getPatientFollowupDetail(Long patientID, Integer pageIndex, Integer pageOffset) {
+        Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
+        Page<FollowupRecord> page = followupRecordRepository.findByPatientID(patientID, pageable);
+        return new Result(page);
     }
 
     @Override

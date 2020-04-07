@@ -63,4 +63,29 @@ public class UserController {
         return userService.getDoctorNameByDoctorID(doctorID);
     }
 
+    @ApiOperation(value = "获取患者管理计划", response = Result.class)
+    @GetMapping(value = "/patient/detail/plan")
+    public Result patientManagePlanDetail(@RequestParam(value = "patientID") Long patientID){
+        //管理计划
+        return userService.getPatientManagePlanDetail(patientID);
+    }
+
+    @ApiOperation(value = "获取患者预警历史(分页)", response = Result.class)
+    @GetMapping(value = "/patient/detail/alert")
+    public Result patientAlertDetail(@RequestParam(value = "patientID") Long patientID,
+                                     @RequestParam(value = "pageIndex") Integer pageIndex,
+                                     @RequestParam(value = "pageOffset") Integer pageOffset){
+        //预警历史
+        return userService.getPatientAlertDetail(patientID, pageIndex, pageOffset);
+    }
+
+    @ApiOperation(value = "获取患者随访记录(分页)", response = Result.class)
+    @GetMapping(value = "/patient/detail/followup")
+    public Result patientFollowupDetail(@RequestParam(value = "patientID") Long patientID,
+                                     @RequestParam(value = "pageIndex") Integer pageIndex,
+                                     @RequestParam(value = "pageOffset") Integer pageOffset){
+        //预警历史
+        return userService.getPatientFollowupDetail(patientID, pageIndex, pageOffset);
+    }
+
 }

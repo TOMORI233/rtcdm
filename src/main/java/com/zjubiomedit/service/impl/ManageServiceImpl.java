@@ -105,13 +105,6 @@ public class ManageServiceImpl implements ManageService {
     }
 
     @Override
-    public Result getPatientAlertHist(Long patientID, Integer pageIndex, Integer pageOffset) {
-        Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
-        Page<AlertPagingDto> page = alertRecordRepository.findPatientAlertHistByPatientID(patientID, pageable);
-        return new Result(page);
-    }
-
-    @Override
     public Result getAlertPatientCount(Long viewerID) {
         return new Result(alertRecordRepository.CountPatientByViewerID(viewerID));
     }

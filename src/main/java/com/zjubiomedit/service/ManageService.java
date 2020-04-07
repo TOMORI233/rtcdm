@@ -23,8 +23,6 @@ public interface ManageService {
 
     Result pagingPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset);
 
-    Result getPatientAlertHist(Long patientID, Integer pageIndex, Integer pageOffset);
-
     Result getAlertPatientCount(Long viewerID);
 
     Result ignoreAlert(Long serialNo, String ignoreReason, Long executeDoctorID);

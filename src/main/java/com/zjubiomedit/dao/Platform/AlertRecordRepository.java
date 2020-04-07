@@ -44,19 +44,5 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
 
     AlertRecord findBySerialNo(Long serialNo);
 
-    @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertPagingDto" +
-            "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followUpSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
-            "pub.name, pub.sex, pub.dateOfBirth, " +
-            "mpi.manageStatus, mpi.complianceRate, " +
-            "dua.name, dua.orgCode, " +
-            "od.orgName, " +
-            "cmd.manageLevel) " +
-            "from AlertRecord ar, PatientUserBaseInfo pub, ManagedPatientIndex mpi, DoctorUserAuths dua, OrgDict od, COPDManageDetail cmd " +
-            "where ar.patientID = :patientID " +
-            "and pub.userID = :patientID " +
-            "and mpi.patientID = :patientID " +
-            "and dua.userID = mpi.doctorID " +
-            "and dua.orgCode = od.orgCode " +
-            "and cmd.patientID = :patientID")
-    Page<AlertPagingDto> findPatientAlertHistByPatientID(@Param("patientID") Long patientID, Pageable pageable);
+    Page<AlertRecord> findByPatientID(Long patientID, Pageable pageable);
 }
