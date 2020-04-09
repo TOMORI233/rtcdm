@@ -45,4 +45,35 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
     AlertRecord findBySerialNo(Long serialNo);
 
     Page<AlertRecord> findByPatientID(Long patientID, Pageable pageable);
+
+    @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertPagingDto" +
+            "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followUpSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
+            "pub.name, pub.sex, pub.dateOfBirth, " +
+            "mpi.manageStatus, mpi.complianceRate, " +
+            "dua.name, dua.orgCode, " +
+            "od.orgName, " +
+            "cmd.manageLevel) " +
+            "from AlertRecord ar, PatientUserBaseInfo pub, ManagedPatientIndex mpi, DoctorUserAuths dua, OrgDict od, COPDManageDetail cmd " +
+            "where ar.status = 0 " +
+            "and ar.patientID in " +
+            "(select patientID from ReferralRecord " +
+            "where doctorID = :viewerID or orgCode in" +
+            "(select orgCode from DoctorUserAuths " +
+            "where userID = :viewerID and auth = 1))" +
+            "and pub.userID = ar.patientID " +
+            "and mpi.patientID = ar.patientID " +
+            "and dua.userID = mpi.doctorID " +
+            "and dua.orgCode = od.orgCode " +
+            "and cmd.patientID = ar.patientID")
+    Page<AlertPagingDto> findReferralAlertPageByViewerID(Long viewerID, Pageable pageable);
+
+    @Query(value = "select count(distinct ar.patientID) " +
+            "from AlertRecord ar " +
+            "where ar.status = 0 " +
+            "and ar.patientID in " +
+            "(select patientID from ReferralRecord " +
+            "where doctorID = :viewerID or orgCode in" +
+            "(select orgCode from DoctorUserAuths " +
+            "where userID = :viewerID and auth = 1))")
+    Integer CountReferralPatientByViewerID(Long viewerID);
 }

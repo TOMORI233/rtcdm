@@ -191,10 +191,31 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
     @Query(value = "select new com.zjubiomedit.dto.DoctorEndDto.PatientListDto" +
             "(pub.userID, pub.name) " +
             "from PatientUserBaseInfo pub " +
-            "where pub.userID in " +
+            "where (:patientType = 0 and pub.userID in " + //全部
             "(select patientID from ManagedPatientIndex " +
-            "where doctorID = :viewerID or hospitalID = :viewerID)")
-    List<PatientListDto> findPatientByViewerID(Long viewerID);
+            "where doctorID = :viewerID or hospitalID = :viewerID) " +
+            "or pub.userID in " +
+            "(select patientID from ReferralRecord " +
+            "where doctorID = :viewerID or orgCode in" +
+            "(select orgCode from DoctorUserAuths " +
+            "where userID = :viewerID and auth = 1))) " +
+
+            "or (:patientType = 1 and pub.userID in " + //管理中
+            "(select patientID from ManagedPatientIndex " +
+            "where manageStatus = 0 " +
+            "and (doctorID = :viewerID or hospitalID = :viewerID))) " +
+
+            "or (:patientType = 2 and pub.userID in " + //转出
+            "(select patientID from ManagedPatientIndex " +
+            "where (manageStatus = 1 or manageStatus = 2) " +
+            "and (doctorID = :viewerID or hospitalID = :viewerID))) " +
+
+            "or (:patientType = 3 and pub.userID in " + //转入
+            "(select patientID from ReferralRecord " +
+            "where doctorID = :viewerID or orgCode in" +
+            "(select orgCode from DoctorUserAuths " +
+            "where userID = :viewerID and auth = 1)))")
+    List<PatientListDto> findPatientByViewerIDAndType(@Param("viewerID") Long viewerID, @Param("patientType") Integer patientType);
 
     ManagedPatientIndex findByPatientID(Long patientID);
 }

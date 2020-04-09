@@ -45,7 +45,7 @@ public interface ManageService {
 
     Result getHospitalPatientCount(String orgCode);
 
-    Result getPatientList(Long viewerID);
+    Result getPatientList(Long viewerID, Integer type);
 
     Result createFollowupPlan(FollowupPlanCreateDto followupPlanCreateDto);
 
@@ -56,4 +56,12 @@ public interface ManageService {
     Result backReferral(Long serialNo, String receipt);
 
     Result recordPatientFollowup(FollowupRecordDto followupRecordDto);
+
+    Result pagingReferralPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset);
+
+    Result getAlertReferralPatientCount(Long viewerID);
+
+    Result getReferralFollowupCount(Long viewerID, Date startDate, Date endDate);
+
+    Result pagingReferralFollowup(Long viewerID, Integer status, Date startDate, Date endDate, Integer pageIndex, Integer pageOffset);
 }

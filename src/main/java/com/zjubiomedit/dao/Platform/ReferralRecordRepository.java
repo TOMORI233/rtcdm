@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 public interface ReferralRecordRepository extends JpaRepository<ReferralRecord, Long> {
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.ReferralReviewPagingDto" +
@@ -47,7 +49,7 @@ public interface ReferralRecordRepository extends JpaRepository<ReferralRecord, 
             "and cmd.patientID = rr.patientID")
     Page<ReferralReviewPagingDto> findReferralReviewPageByDoctorID(Long doctorID, Pageable pageable);
 
-    ReferralRecord findBySerialNo(Long serialNo);
+    Optional<ReferralRecord> findBySerialNo(Long serialNo);
 
-    ReferralRecord findByPatientID(Long patientID);
+    ReferralRecord findFirstByPatientIDOrderByStartDateTimeDesc(Long patientID);
 }

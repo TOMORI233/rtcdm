@@ -84,25 +84,27 @@ public class ManageController {
     }
 
     @ApiOperation(value = "【医生/医院】获取患者ID姓名列表", response = Result.class)
-    @GetMapping(value = "/index/patient/list")
-    public Result doctorPatientList(@RequestParam(value = "viewerID") Long viewerID){
-        return manageService.getPatientList(viewerID);
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", value = "0-全部 1-管理中 2-转出 3-转入", required = true, defaultValue = "0")})
+    @GetMapping(value = "/index/patient/namelist")
+    public Result doctorPatientList(@RequestParam(value = "viewerID") Long viewerID,
+                                    Integer type){
+        return manageService.getPatientList(viewerID, type);
     }
 
     /**
      * 随访
      */
-    @ApiOperation(value = "【医生/医院】获取随访总人数/待随访人数/已随访人数", response = Result.class)
-    @GetMapping(value = "/followup/count")
+    @ApiOperation(value = "【医生/医院】获取本院随访总人数/待随访人数/已随访人数", response = Result.class)
+    @GetMapping(value = "/followup/count/this")
     public Result patientFollowupCount(@RequestParam(value = "viewerID") Long viewerID,
                                        @RequestParam(value = "startDate") Date startDate,
                                        @RequestParam(value = "endDate") Date endDate){
         return manageService.getFollowupCount(viewerID, startDate, endDate);
     }
 
-    @ApiOperation(value = "【医生/医院】获取随访列表（分页）", response = Result.class)
+    @ApiOperation(value = "【医生/医院】获取本院随访列表（分页）", response = Result.class)
     @ApiImplicitParams({@ApiImplicitParam(name = "status", value = "0-待随访 1-已随访 2-已失效/忽略", required = true, defaultValue = "0")})
-    @GetMapping(value = "/followup/page")
+    @GetMapping(value = "/followup/page/this")
     public Result patientFollowupPage(@RequestParam(value = "viewerID") Long viewerID,
                                       Integer status,
                                       @RequestParam(value = "startDate") Date startDate,
@@ -110,6 +112,26 @@ public class ManageController {
                                       @RequestParam(value = "pageIndex") Integer pageIndex,
                                       @RequestParam(value = "pageOffset") Integer pageOffset){
         return manageService.pagingFollowup(viewerID, status, startDate, endDate, pageIndex, pageOffset);
+    }
+
+    @ApiOperation(value = "【医生/医院】获取转诊随访总人数/待随访人数/已随访人数", response = Result.class)
+    @GetMapping(value = "/followup/count/referral")
+    public Result ReferralPatientFollowupCount(@RequestParam(value = "viewerID") Long viewerID,
+                                       @RequestParam(value = "startDate") Date startDate,
+                                       @RequestParam(value = "endDate") Date endDate){
+        return manageService.getReferralFollowupCount(viewerID, startDate, endDate);
+    }
+
+    @ApiOperation(value = "【医生/医院】获取转诊随访列表（分页）", response = Result.class)
+    @ApiImplicitParams({@ApiImplicitParam(name = "status", value = "0-待随访 1-已随访 2-已失效/忽略", required = true, defaultValue = "0")})
+    @GetMapping(value = "/followup/page/referral")
+    public Result ReferralPatientFollowupPage(@RequestParam(value = "viewerID") Long viewerID,
+                                      Integer status,
+                                      @RequestParam(value = "startDate") Date startDate,
+                                      @RequestParam(value = "endDate") Date endDate,
+                                      @RequestParam(value = "pageIndex") Integer pageIndex,
+                                      @RequestParam(value = "pageOffset") Integer pageOffset){
+        return manageService.pagingReferralFollowup(viewerID, status, startDate, endDate, pageIndex, pageOffset);
     }
 
     @ApiOperation(value = "【医生/医院】忽略随访", response = Result.class)
@@ -133,8 +155,8 @@ public class ManageController {
     /**
      *  预警
      */
-    @ApiOperation(value = "【医生/医院】获取患者预警记录（分页）", response = Result.class)
-    @GetMapping(value = "/alert/page")
+    @ApiOperation(value = "【医生/医院】获取本院患者预警记录（分页）", response = Result.class)
+    @GetMapping(value = "/alert/page/this")
     public Result patientAlertList(@RequestParam(value = "viewerID") Long viewerID,
                                    @RequestParam(value = "pageIndex") Integer pageIndex,
                                    @RequestParam(value = "pageOffset") Integer pageOffset){
@@ -142,10 +164,24 @@ public class ManageController {
         return manageService.pagingPatientAlert(viewerID, pageIndex, pageOffset);
     }
 
-    @ApiOperation(value = "【医生/医院】获取预警患者数量", response = Result.class)
-    @GetMapping(value = "/alert/count")
+    @ApiOperation(value = "【医生/医院】获取本院预警患者数量", response = Result.class)
+    @GetMapping(value = "/alert/count/this")
     public Result patientAlertCount(@RequestParam(value = "viewerID") Long viewerID){
         return manageService.getAlertPatientCount(viewerID);
+    }
+
+    @ApiOperation(value = "【医生/医院】获取转诊患者预警记录（分页）", response = Result.class)
+    @GetMapping(value = "/alert/page/referral")
+    public Result ReferralPatientAlertList(@RequestParam(value = "viewerID") Long viewerID,
+                                   @RequestParam(value = "pageIndex") Integer pageIndex,
+                                   @RequestParam(value = "pageOffset") Integer pageOffset){
+        return manageService.pagingReferralPatientAlert(viewerID, pageIndex, pageOffset);
+    }
+
+    @ApiOperation(value = "【医生/医院】获取转诊预警患者数量", response = Result.class)
+    @GetMapping(value = "/alert/count/referral")
+    public Result ReferralAlertCount(@RequestParam(value = "viewerID") Long viewerID){
+        return manageService.getAlertReferralPatientCount(viewerID);
     }
 
     @ApiOperation(value = "【医生/医院】忽略患者预警", response = Result.class)

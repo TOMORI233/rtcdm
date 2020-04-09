@@ -1,5 +1,6 @@
 package com.zjubiomedit.service.impl;
 
+import com.zjubiomedit.config.exception.CommonJsonException;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorUserLoginDto;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
@@ -66,27 +67,31 @@ public class AuthServiceImpl implements AuthService {
             return new Result(ErrorEnum.E_501);
         }
         else{
-            Optional<DoctorUserAuths> userAuths = doctorUserRepository.findByUserName(userName);
-            if (userAuths.isPresent()) {
-                DoctorUserAuths user = userAuths.get();
-                if (user.getStatus() == Utils.USER_ACTIVE) {
-                    if (user.getPassword().equals(password)) {
-                        user.setLoginCount(user.getLoginCount() + 1);
-                        doctorUserRepository.save(user);
-                        DoctorUserLoginDto doctorUserLoginDto = new DoctorUserLoginDto();
-                        doctorUserLoginDto.setUserName(userName);
-                        doctorUserLoginDto.setAuth(user.getAuth());
-                        doctorUserLoginDto.setOrgCode(user.getOrgCode());
-                        return new Result(doctorUserLoginDto);
-                    }
-                    else {
-                        return new Result(ErrorEnum.E_10002);
+            try {
+                Optional<DoctorUserAuths> userAuths = doctorUserRepository.findByUserName(userName);
+                if (userAuths.isPresent()) {
+                    DoctorUserAuths user = userAuths.get();
+                    if (user.getStatus() == Utils.USER_ACTIVE) {
+                        if (user.getPassword().equals(password)) {
+                            user.setLoginCount(user.getLoginCount() + 1);
+                            doctorUserRepository.save(user);
+                            DoctorUserLoginDto doctorUserLoginDto = new DoctorUserLoginDto();
+                            doctorUserLoginDto.setUserName(userName);
+                            doctorUserLoginDto.setAuth(user.getAuth());
+                            doctorUserLoginDto.setOrgCode(user.getOrgCode());
+                            return new Result(doctorUserLoginDto);
+                        }
+                        else {
+                            return new Result(ErrorEnum.E_10002);
+                        }
+                    } else {
+                        return new Result(ErrorEnum.E_10004);
                     }
                 } else {
-                    return new Result(ErrorEnum.E_10004);
+                    return new Result(ErrorEnum.E_10001);
                 }
-            } else {
-                return new Result(ErrorEnum.E_10001);
+            } catch (NullPointerException e) {
+                throw new CommonJsonException(ErrorEnum.E_10007);
             }
         }
     }

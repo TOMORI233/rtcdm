@@ -1,5 +1,6 @@
 package com.zjubiomedit.service.impl;
 
+import com.zjubiomedit.config.exception.CommonJsonException;
 import com.zjubiomedit.dao.Platform.*;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
@@ -54,84 +55,116 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result createDoctorUser(DoctorUserAuths doctorUserAuths) {
-        DoctorUserAuths save = doctorUserRepository.save(doctorUserAuths);
-        return new Result(save);
+        try {
+            DoctorUserAuths newDoctor = doctorUserRepository.save(doctorUserAuths);
+            return new Result(newDoctor);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10005);
+        }
     }
 
     @Override
     public Result getPatientBaseInfo(Long patientID) {
-        return new Result(patientUserBaseInfoRepository.findByUserID(patientID));
+        try {
+            return new Result(patientUserBaseInfoRepository.findByUserID(patientID));
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result getDoctorList(Long hospitalID){
-        Optional<Integer> auth = doctorUserAuthsRepository.findAuthById(hospitalID);
-        if(auth.isPresent()){
-            if(auth.get().equals(Utils.PERSONAL)){
-                return new Result(ErrorEnum.E_401);
+        try {
+            Optional<Integer> auth = doctorUserAuthsRepository.findAuthById(hospitalID);
+            if(auth.isPresent()){
+                if(auth.get().equals(Utils.PERSONAL)){
+                    return new Result(ErrorEnum.E_401);
+                }
+                List<DoctorListDto> doctorList = doctorUserAuthsRepository.findByHospitalId(hospitalID);
+                return new Result(doctorList);
             }
-            List<DoctorListDto> doctorList = doctorUserAuthsRepository.findByHospitalId(hospitalID);
-            return new Result(doctorList);
-        }
-        else {
-            return new Result(ErrorEnum.E_400);
+            else {
+                return new Result(ErrorEnum.E_400);
+            }
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
         }
     }
 
     @Override
     public Result getPatientManageDetail(Long patientID) {
-        return new Result(managedPatientIndexRepository.findByPatientID(patientID));
+        try {
+            return new Result(managedPatientIndexRepository.findByPatientID(patientID));
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result getPatientReferralDetail(Long patientID) {
-        return new Result(referralRecordRepository.findByPatientID(patientID));
+        try {
+            return new Result(referralRecordRepository.findFirstByPatientIDOrderByStartDateTimeDesc(patientID));
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result getDoctorNameByDoctorID(Long doctorID) {
-        return new Result(doctorUserAuthsRepository.findDoctorNameByDoctorID(doctorID));
+        try {
+            return new Result(doctorUserAuthsRepository.findDoctorNameByDoctorID(doctorID));
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result getPatientManagePlanDetail(Long patientID) {
-        return new Result(managementPlanRepository.findByPatientID(patientID));
+        try {
+            return new Result(managementPlanRepository.findByPatientID(patientID));
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result getPatientAlertDetail(Long patientID, Integer pageIndex, Integer pageOffset) {
-        Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
-        Page<AlertRecord> page = alertRecordRepository.findByPatientID(patientID, pageable);
-        return new Result(page);
+        try {
+            Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
+            Page<AlertRecord> page = alertRecordRepository.findByPatientID(patientID, pageable);
+            return new Result(page);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result getPatientFollowupDetail(Long patientID, Integer pageIndex, Integer pageOffset) {
-        Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
-        Page<FollowupRecord> page = followupRecordRepository.findByPatientID(patientID, pageable);
-        return new Result(page);
+        try {
+            Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
+            Page<FollowupRecord> page = followupRecordRepository.findByPatientID(patientID, pageable);
+            return new Result(page);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result createPatientUser(DoctorCreatePatientDto doctorCreatePatientDto) {
-//        Gson gson = new Gson();
-//        PatientUserAuths patientUserAuths = gson.fromJson(jsonObject, PatientUserAuths.class);
-//        PatientUserBaseInfo patientUserBaseInfo = gson.fromJson(jsonObject, PatientUserBaseInfo.class);
-//        PatientUserAuths userAuths = patientUserAuthsRepository.save(patientUserAuths);
-//        patientUserBaseInfo.setUserID(userAuths.getUserID());
-//        PatientUserBaseInfo userBaseInfo = patientUserBaseInfoRepository.save(patientUserBaseInfo);
-//        return new Result(userBaseInfo);
-
-        PatientUserAuths patientUserAuths = new PatientUserAuths();
-        PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
-        ManagedPatientIndex managedPatientIndex = new ManagedPatientIndex();
-        BeanUtils.copyProperties(doctorCreatePatientDto, patientUserAuths);
-        BeanUtils.copyProperties(doctorCreatePatientDto, patientUserBaseInfo);
-        BeanUtils.copyProperties(doctorCreatePatientDto, managedPatientIndex);
-        managedPatientIndex.setPatientID(doctorCreatePatientDto.getUserID());
-        patientUserAuthsRepository.save(patientUserAuths);
-        PatientUserBaseInfo userBaseInfo = patientUserBaseInfoRepository.save(patientUserBaseInfo);
-        managedPatientIndexRepository.save(managedPatientIndex);
-        return new Result(userBaseInfo);
+        try {
+            PatientUserAuths patientUserAuths = new PatientUserAuths();
+            PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
+            ManagedPatientIndex managedPatientIndex = new ManagedPatientIndex();
+            BeanUtils.copyProperties(doctorCreatePatientDto, patientUserAuths);
+            BeanUtils.copyProperties(doctorCreatePatientDto, patientUserBaseInfo);
+            BeanUtils.copyProperties(doctorCreatePatientDto, managedPatientIndex);
+            managedPatientIndex.setPatientID(doctorCreatePatientDto.getUserID());
+            patientUserAuthsRepository.save(patientUserAuths);
+            PatientUserBaseInfo userBaseInfo = patientUserBaseInfoRepository.save(patientUserBaseInfo);
+            managedPatientIndexRepository.save(managedPatientIndex);
+            return new Result(userBaseInfo);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10005);
+        }
     }
 }

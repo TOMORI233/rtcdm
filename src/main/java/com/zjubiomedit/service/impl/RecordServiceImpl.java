@@ -147,7 +147,7 @@ public class RecordServiceImpl implements RecordService {
                     return new Result(ErrorEnum.E_10006);
             }
         } catch (NullPointerException e) {
-            throw new CommonJsonException(ErrorEnum.E_10005);
+            throw new CommonJsonException(ErrorEnum.E_10007);
         }
     }
 
@@ -187,7 +187,7 @@ public class RecordServiceImpl implements RecordService {
                     return new Result(ErrorEnum.E_10006);
             }
         } catch (NullPointerException e) {
-            throw new CommonJsonException(ErrorEnum.E_10005);
+            throw new CommonJsonException(ErrorEnum.E_10007);
         }
     }
 }

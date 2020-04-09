@@ -44,7 +44,7 @@ public class UserController {
         return userService.getPatientManageDetail(patientID);
     }
 
-    @ApiOperation(value = "获取患者转诊信息", response = Result.class)
+    @ApiOperation(value = "获取患者当前转诊信息", response = Result.class)
     @GetMapping(value = "/patient/detail/referral")
     public Result patientReferralDetail(@RequestParam(value = "patientID") Long patientID){
         //转诊信息
@@ -57,21 +57,21 @@ public class UserController {
         return userService.getDoctorList(hospitalID);
     }
 
-    @ApiOperation(value = "获取医生ID对应姓名", response = Result.class)
+    @ApiOperation(value = "获取医生/医院账户ID对应姓名", response = Result.class)
     @GetMapping(value = "/doctor/name")
     public Result doctorNameByID(@RequestParam(value = "doctorID") Long doctorID){
         return userService.getDoctorNameByDoctorID(doctorID);
     }
 
-    @ApiOperation(value = "获取患者管理计划", response = Result.class)
-    @GetMapping(value = "/patient/detail/plan")
+    @ApiOperation(value = "获取患者管理计划历史列表", response = Result.class)
+    @GetMapping(value = "/patient/history/plan")
     public Result patientManagePlanDetail(@RequestParam(value = "patientID") Long patientID){
         //管理计划
         return userService.getPatientManagePlanDetail(patientID);
     }
 
     @ApiOperation(value = "获取患者预警历史(分页)", response = Result.class)
-    @GetMapping(value = "/patient/detail/alert")
+    @GetMapping(value = "/patient/history/alert/page")
     public Result patientAlertDetail(@RequestParam(value = "patientID") Long patientID,
                                      @RequestParam(value = "pageIndex") Integer pageIndex,
                                      @RequestParam(value = "pageOffset") Integer pageOffset){
@@ -79,13 +79,15 @@ public class UserController {
         return userService.getPatientAlertDetail(patientID, pageIndex, pageOffset);
     }
 
-    @ApiOperation(value = "获取患者随访记录(分页)", response = Result.class)
-    @GetMapping(value = "/patient/detail/followup")
+    @ApiOperation(value = "获取患者随访历史记录(分页)", response = Result.class)
+    @GetMapping(value = "/patient/history/followup/page")
     public Result patientFollowupDetail(@RequestParam(value = "patientID") Long patientID,
                                      @RequestParam(value = "pageIndex") Integer pageIndex,
                                      @RequestParam(value = "pageOffset") Integer pageOffset){
         //预警历史
         return userService.getPatientFollowupDetail(patientID, pageIndex, pageOffset);
     }
+
+
 
 }

@@ -3,6 +3,7 @@ package com.zjubiomedit.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.zjubiomedit.config.exception.CommonJsonException;
 import com.zjubiomedit.dao.Dict.DivisionDictRepository;
 import com.zjubiomedit.dao.Dict.OrgDictRepository;
 import com.zjubiomedit.entity.Dict.DivisionDict;
@@ -10,6 +11,7 @@ import com.zjubiomedit.entity.Dict.OrgDict;
 import com.zjubiomedit.service.DictService;
 import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
+import com.zjubiomedit.util.enums.ErrorEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +29,12 @@ public class DictServiceImpl implements DictService {
 
     @Override
     public Result createDivision(DivisionDict divisionDict) {
-        Object save = divisionDictRepository.save(divisionDict);
-        return new Result(save);
+        try {
+            Object save = divisionDictRepository.save(divisionDict);
+            return new Result(save);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10005);
+        }
     }
 
     @Override
@@ -67,27 +73,43 @@ public class DictServiceImpl implements DictService {
 
     @Override
     public Result createOrg(OrgDict orgDict) {
-        Object save = orgDictRepository.save(orgDict);
-        return new Result(save);
+        try {
+            Object save = orgDictRepository.save(orgDict);
+            return new Result(save);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10005);
+        }
     }
 
     @Override
     public Result getOrgByDivision(JsonObject jsonObject) {
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        String divisionCode = jsonObject.get("divisionCode").getAsString();
-        List<OrgDict> orgDicts = orgDictRepository.findByDivisionCodeAndIsValid(divisionCode, Utils.VALID);
-        return new Result(orgDicts);
+        try {
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+            String divisionCode = jsonObject.get("divisionCode").getAsString();
+            List<OrgDict> orgDicts = orgDictRepository.findByDivisionCodeAndIsValid(divisionCode, Utils.VALID);
+            return new Result(orgDicts);
 //        return new Result(gson.toJson(orgDicts))
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result getHospitalList(String orgCode) {
-        List<OrgDict> list = orgDictRepository.findByParentOrgCodeAndIsValid(orgCode, Utils.VALID);
-        return new Result(list);
+        try {
+            List<OrgDict> list = orgDictRepository.findByParentOrgCodeAndIsValid(orgCode, Utils.VALID);
+            return new Result(list);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 
     @Override
     public Result getOrgNameByOrgCode(String orgCode) {
-        return new Result(orgDictRepository.findOrgNameByOrgCode(orgCode));
+        try{
+            return new Result(orgDictRepository.findOrgNameByOrgCodeAndIsValid(orgCode, Utils.VALID));
+        } catch (Exception e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
     }
 }
