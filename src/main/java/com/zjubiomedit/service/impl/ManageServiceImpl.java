@@ -65,7 +65,6 @@ public class ManageServiceImpl implements ManageService {
             Optional<ManagementApplicationReview> registerReview = managementApplicationRepository.findBySerialNo(serialNo);
             if (registerReview.isPresent()) {
                 ManagementApplicationReview review = registerReview.get();
-                review.setStatus(status);
                 review.setReviewerID(reviewerID);
                 Long patientID = review.getPatientID();
                 Long hospitalID = review.getHospitalID();
@@ -93,10 +92,11 @@ public class ManageServiceImpl implements ManageService {
                 } else if (status == Utils.REVIEW_FAILED) { //不通过
                     review.setRefuseReason(refuseReason);
                 }
+                review.setStatus(status);
                 managementApplicationRepository.save(review);
-                return new Result("ID:" + patientID + " 的患者已注册！");
+                return new Result();
             } else {
-                return new Result(ErrorEnum.E_30001);
+                return new Result(ErrorEnum.E_10008);
             }
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
@@ -126,11 +126,17 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Result ignoreAlert(Long serialNo, String ignoreReason, Long executeDoctorID) {
         try {
-            AlertRecord thisRecord = alertRecordRepository.findBySerialNo(serialNo);
-            thisRecord.setIgnoreReason(ignoreReason);
-            thisRecord.setStatus(Utils.ALERT_IGNORED);
-            thisRecord.setExecuteDoctorID(executeDoctorID);
-            return new Result(alertRecordRepository.save(thisRecord));
+            Optional<AlertRecord> alertRecordOptional = alertRecordRepository.findBySerialNoAndStatus(serialNo, Utils.ALERT_UNPROCESSED);
+            Result result = new Result(ErrorEnum.E_10008);
+            alertRecordOptional.ifPresent(alertRecord -> {
+                alertRecord.setIgnoreReason(ignoreReason);
+                alertRecord.setStatus(Utils.ALERT_IGNORED);
+                alertRecord.setExecuteDoctorID(executeDoctorID);
+                alertRecordRepository.save(alertRecord);
+                result.setCode(0);
+                result.setMessage("success");
+            });
+            return result;
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
         }
@@ -150,7 +156,7 @@ public class ManageServiceImpl implements ManageService {
                 }
                 return new Result(page);
             } else {
-                return new Result(ErrorEnum.E_400);
+                return new Result(ErrorEnum.E_10008);
             }
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
@@ -162,7 +168,8 @@ public class ManageServiceImpl implements ManageService {
         try {
             ReferralRecord newRecord = new ReferralRecord();
             BeanUtils.copyProperties(referralApplyDto, newRecord);
-            return new Result(referralRecordRepository.save(newRecord));
+            referralRecordRepository.save(newRecord);
+            return new Result();
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }
@@ -196,9 +203,15 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Result ignoreFollowup(Long serialNo) {
         try {
-            FollowupPlan thisPlan = followupPlanRepository.findBySerialNo(serialNo);
-            thisPlan.setStatus(Utils.FOLLOW_PLAN_ABOLISHED);
-            return new Result(followupPlanRepository.save(thisPlan));
+            Optional<FollowupPlan> thisPlanOptional = followupPlanRepository.findBySerialNoAndStatus(serialNo, Utils.FOLLOW_PLAN_TODO);
+            Result result = new Result(ErrorEnum.E_10008);
+            thisPlanOptional.ifPresent(thisPlan -> {
+                thisPlan.setStatus(Utils.FOLLOW_PLAN_ABOLISHED);
+                followupPlanRepository.save(thisPlan);
+                result.setCode(0);
+                result.setMessage("success");
+            });
+            return result;
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }
@@ -230,7 +243,7 @@ public class ManageServiceImpl implements ManageService {
                         return new Result(ErrorEnum.E_501);
                 }
             } else {
-                return new Result(ErrorEnum.E_400);
+                return new Result(ErrorEnum.E_10008);
             }
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
@@ -316,9 +329,10 @@ public class ManageServiceImpl implements ManageService {
             thisPlan.setPatientID(followupPlanCreateDto.getPatientID());
             thisPlan.setPlanDate(followupPlanCreateDto.getPlanDate());
             thisPlan.setFollowUpType(followupPlanCreateDto.getFollowUpType());
+            thisPlan.setMemo(followupPlanCreateDto.getMemo());
             thisPlan.setStatus(Utils.FOLLOW_PLAN_TODO);
             followupPlanRepository.save(thisPlan);
-            return new Result(thisPlan);
+            return new Result();
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }
@@ -328,14 +342,14 @@ public class ManageServiceImpl implements ManageService {
     public Result refuseReferral(Long serialNo, Long reviewerID, String refuseReason) {
         try {
             Optional<ReferralRecord> thisRecord = referralRecordRepository.findBySerialNo(serialNo);
-            thisRecord.ifPresent(record->{
+            thisRecord.ifPresent(record -> {
                 record.setReviewerID(reviewerID);
                 record.setStatus(Utils.REFERRAL_FAILED);
                 record.setReviewDateTime(new Date());
                 record.setRefuseReason(refuseReason);
                 referralRecordRepository.save(record);
             });
-            return new Result("转诊申请已拒绝");
+            return new Result();
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }
@@ -345,16 +359,19 @@ public class ManageServiceImpl implements ManageService {
     public Result approveReferral(Long serialNo, Long reviewerID, Long doctorID) {
         try {
             Optional<ReferralRecord> thisRecord = referralRecordRepository.findBySerialNo(serialNo);
-            thisRecord.ifPresent(record->{
-                record.setReviewerID(reviewerID);
-                record.setStatus(Utils.REFERRAL_APPROVED);
-                record.setReviewDateTime(new Date());
-                ManagedPatientIndex thisPatient = managedPatientIndexRepository.findByPatientID(record.getPatientID());
-                thisPatient.setManageStatus(record.getReferralType());
-                referralRecordRepository.save(record);
-                managedPatientIndexRepository.save(thisPatient);
+            thisRecord.ifPresent(record -> {
+                if (record.getStatus().equals(Utils.REFERRAL_UNREVIEWED)) {
+                    record.setReviewerID(reviewerID);
+                    record.setDoctorID(doctorID);
+                    record.setStatus(Utils.REFERRAL_APPROVED);
+                    record.setReviewDateTime(new Date());
+                    ManagedPatientIndex thisPatient = managedPatientIndexRepository.findByPatientID(record.getPatientID());
+                    thisPatient.setManageStatus(record.getReferralType());
+                    referralRecordRepository.save(record);
+                    managedPatientIndexRepository.save(thisPatient);
+                }
             });
-            return new Result("转诊申请已通过");
+            return new Result();
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }
@@ -364,16 +381,21 @@ public class ManageServiceImpl implements ManageService {
     public Result backReferral(Long serialNo, String receipt) {
         try {
             Optional<ReferralRecord> thisRecord = referralRecordRepository.findBySerialNo(serialNo);
-            thisRecord.ifPresent(record->{
-                record.setStatus(Utils.REFERRAL_OVER);
-                record.setEndDateTime(new Date());
-                record.setReceipt(receipt);
-                ManagedPatientIndex thisPatient = managedPatientIndexRepository.findByPatientID(record.getPatientID());
-                thisPatient.setManageStatus(Utils.MANAGE_PROCESSING);
-                referralRecordRepository.save(record);
-                managedPatientIndexRepository.save(thisPatient);
+            Result result = new Result(ErrorEnum.E_10008);
+            thisRecord.ifPresent(record -> {
+                if (record.getStatus().equals(Utils.REFERRAL_APPROVED)) {
+                    record.setStatus(Utils.REFERRAL_OVER);
+                    record.setEndDateTime(new Date());
+                    record.setReceipt(receipt);
+                    ManagedPatientIndex thisPatient = managedPatientIndexRepository.findByPatientID(record.getPatientID());
+                    thisPatient.setManageStatus(Utils.MANAGE_PROCESSING);
+                    referralRecordRepository.save(record);
+                    managedPatientIndexRepository.save(thisPatient);
+                    result.setCode(0);
+                    result.setMessage("success");
+                }
             });
-            return new Result("已转回");
+            return result;
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }
@@ -381,23 +403,32 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public Result recordPatientFollowup(FollowupRecordDto followupRecordDto) {
-        try{
+        try {
             FollowupRecord newFollowupRecord = new FollowupRecord();
             BeanUtils.copyProperties(followupRecordDto, newFollowupRecord);
             FollowupRecord thisFollowup = followupRecordRepository.save(newFollowupRecord);
+            Result result = new Result(ErrorEnum.E_10008);
             if (followupRecordDto.getAlertSerialNo() != null) {
-                AlertRecord thisAlert = alertRecordRepository.findBySerialNo(followupRecordDto.getAlertSerialNo());
-                thisAlert.setExecuteDoctorID(followupRecordDto.getExecuteDoctorID());
-                thisAlert.setFollowUpSerialNo(thisFollowup.getSerialNo());
-                thisAlert.setStatus(Utils.ALERT_FOLLOWEDUP);
-                alertRecordRepository.save(thisAlert);
+                Optional<AlertRecord> thisAlertOptional = alertRecordRepository.findBySerialNoAndStatus(followupRecordDto.getAlertSerialNo(), Utils.ALERT_UNPROCESSED);
+                thisAlertOptional.ifPresent(thisAlert -> {
+                    thisAlert.setExecuteDoctorID(followupRecordDto.getExecuteDoctorID());
+                    thisAlert.setFollowUpSerialNo(thisFollowup.getSerialNo());
+                    thisAlert.setStatus(Utils.ALERT_FOLLOWEDUP);
+                    alertRecordRepository.save(thisAlert);
+                    result.setCode(0);
+                    result.setMessage("success");
+                });
             }
             if (followupRecordDto.getPlanSerialNo() != null) {
-                FollowupPlan thisPlan = followupPlanRepository.findBySerialNo(followupRecordDto.getPlanSerialNo());
-                thisPlan.setStatus(Utils.FOLLOW_PLAN_FINISHED);
-                followupPlanRepository.save(thisPlan);
+                Optional<FollowupPlan> thisPlanOptional = followupPlanRepository.findBySerialNoAndStatus(followupRecordDto.getPlanSerialNo(), Utils.FOLLOW_PLAN_TODO);
+                thisPlanOptional.ifPresent(thisPlan -> {
+                    thisPlan.setStatus(Utils.FOLLOW_PLAN_FINISHED);
+                    followupPlanRepository.save(thisPlan);
+                    result.setCode(0);
+                    result.setMessage("success");
+                });
             }
-            return new Result("随访记录已提交");
+            return result;
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }
@@ -405,7 +436,7 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public Result pagingReferralPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset) {
-        try{
+        try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
             Page<AlertPagingDto> page = alertRecordRepository.findReferralAlertPageByViewerID(viewerID, pageable);
             return new Result(page);
@@ -416,7 +447,7 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public Result getAlertReferralPatientCount(Long viewerID) {
-        try{
+        try {
             return new Result(alertRecordRepository.CountReferralPatientByViewerID(viewerID));
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
@@ -425,7 +456,7 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public Result getReferralFollowupCount(Long viewerID, Date startDate, Date endDate) {
-        try{
+        try {
             Long toFollowupCount = followupPlanRepository.CountReferralByViewerIDAndStatusAndDate(viewerID, Utils.FOLLOW_PLAN_TODO, startDate, endDate);
             Long followedupCount = followupPlanRepository.CountReferralByViewerIDAndStatusAndDate(viewerID, Utils.FOLLOW_PLAN_FINISHED, startDate, endDate);
             Long abolishedCount = followupPlanRepository.CountReferralByViewerIDAndStatusAndDate(viewerID, Utils.FOLLOW_PLAN_ABOLISHED, startDate, endDate);
@@ -439,7 +470,7 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public Result pagingReferralFollowup(Long viewerID, Integer status, Date startDate, Date endDate, Integer pageIndex, Integer pageOffset) {
-        try{
+        try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.ASC, "planDate");
             Page<FollowupPagingDto> page = followupPlanRepository.findReferralFollowupPageByViewerIDAndStatusAndTime(viewerID, status, startDate, endDate, pageable);
             return new Result(page);

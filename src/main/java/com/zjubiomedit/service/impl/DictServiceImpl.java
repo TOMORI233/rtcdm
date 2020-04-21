@@ -106,8 +106,9 @@ public class DictServiceImpl implements DictService {
 
     @Override
     public Result getOrgNameByOrgCode(String orgCode) {
-        try{
-            return new Result(orgDictRepository.findOrgNameByOrgCodeAndIsValid(orgCode, Utils.VALID));
+        try {
+            String orgName = orgDictRepository.findOrgNameByOrgCode(orgCode);
+            return new Result(orgName);
         } catch (Exception e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
         }

@@ -17,6 +17,6 @@ public interface OrgDictRepository extends CrudRepository<OrgDict, Long> {
     List<OrgDict> findByParentOrgCodeAndIsValid(String parentOrgCode, Integer isValid);
 
     @Query(value = "select orgName from OrgDict " +
-            "where orgCode = :orgCode and isValid = :isValid")
-    String findOrgNameByOrgCodeAndIsValid(String orgCode, Integer isValid);
+            "where orgCode = :orgCode and isValid = 1")
+    String findOrgNameByOrgCode(String orgCode);
 }

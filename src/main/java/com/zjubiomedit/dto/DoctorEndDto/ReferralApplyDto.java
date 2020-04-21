@@ -10,5 +10,5 @@ public class ReferralApplyDto {
     private String referralReason;
     private String orgCode;
     private Long doctorID;
-    private Long initiatorID;
+    private Long initiator;
 }

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 /**
  * @author leiyi sheng
  * @version 1.0
@@ -42,7 +44,7 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
             "where mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID)")
     Integer CountPatientByViewerID(@Param("viewerID") Long viewerID);
 
-    AlertRecord findBySerialNo(Long serialNo);
+    Optional<AlertRecord> findBySerialNoAndStatus(Long serialNo, Integer status);
 
     Page<AlertRecord> findByPatientID(Long patientID, Pageable pageable);
 

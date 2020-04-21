@@ -20,13 +20,13 @@ public class FollowupRecord extends PlatformBaseEntity{
     @Column(length = 45)
     private String followupMethod; //例如：电话、门诊、家庭、留言
     @Column(nullable = false)
-    private Integer status; // 用于描述本次随访是否有效，0-失访，1-进行中，2-有效，默认值为1
+    private Integer status = 1; // 用于描述本次随访是否有效，0-失访，1-进行中，2-有效，默认值为1
     @Column(length = 100)
     private String failureReason; // 用于描述失访的原因
     @Temporal(TemporalType.TIMESTAMP)
     private Date deathTime; // 只有当失访原因为亡故时才有意义
     @Column(nullable = false)
-    private Integer templateCode; // 1-慢阻肺随访记录表, 2-哮喘随访
+    private Integer templateCode = 1; // 1-慢阻肺随访记录表, 2-哮喘随访
     @Column(length = 300)
     private String summary;  //  摘要规则根据模板不同而不同。
     @Column(length = 1300)

@@ -15,19 +15,18 @@ public interface ReferralRecordRepository extends JpaRepository<ReferralRecord, 
             "(rr.serialNo, rr.patientID, rr.referralType, rr.referralPurpose, rr.referralReason, rr.doctorID, rr.startDateTime, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
             "mpi.manageStatus, mpi.complianceRate, " +
-            "duat.name, dual.name, dual.orgCode, " +
+            "dua.name, dua.orgCode, " +
             "od.orgName, " +
             "cmd.manageLevel) " +
-            "from ReferralRecord rr, PatientUserBaseInfo pub, ManagedPatientIndex mpi, DoctorUserAuths dual, DoctorUserAuths duat, OrgDict od, COPDManageDetail cmd " +
+            "from ReferralRecord rr, PatientUserBaseInfo pub, ManagedPatientIndex mpi, DoctorUserAuths dua, OrgDict od, COPDManageDetail cmd " +
             "where rr.status = 0 " +
             "and rr.orgCode in " +
             "(select orgCode from DoctorUserAuths " +
             "where userID = :hospitalID)" +
             "and pub.userID = rr.patientID " +
             "and mpi.patientID = rr.patientID " +
-            "and duat.userID = rr.doctorID " +
-            "and dual.userID = mpi.doctorID " +
-            "and dual.orgCode = od.orgCode " +
+            "and dua.userID = mpi.hospitalID " +
+            "and od.orgCode = rr.orgCode " +
             "and cmd.patientID = rr.patientID")
     Page<ReferralReviewPagingDto> findReferralReviewPageByHospitalID(Long hospitalID, Pageable pageable);
 
@@ -35,17 +34,16 @@ public interface ReferralRecordRepository extends JpaRepository<ReferralRecord, 
             "(rr.serialNo, rr.patientID, rr.referralType, rr.referralPurpose, rr.referralReason, rr.doctorID, rr.startDateTime, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
             "mpi.manageStatus, mpi.complianceRate, " +
-            "duat.name, dual.name, dual.orgCode, " +
+            "dua.name, dua.orgCode, " +
             "od.orgName, " +
             "cmd.manageLevel) " +
-            "from ReferralRecord rr, PatientUserBaseInfo pub, ManagedPatientIndex mpi, DoctorUserAuths dual, DoctorUserAuths duat, OrgDict od, COPDManageDetail cmd " +
+            "from ReferralRecord rr, PatientUserBaseInfo pub, ManagedPatientIndex mpi, DoctorUserAuths dua, OrgDict od, COPDManageDetail cmd " +
             "where rr.status = 0 " +
             "and rr.doctorID = :doctorID " +
             "and pub.userID = rr.patientID " +
             "and mpi.patientID = rr.patientID " +
-            "and duat.userID = rr.doctorID " +
-            "and dual.userID = mpi.doctorID " +
-            "and dual.orgCode = od.orgCode " +
+            "and dua.userID = mpi.doctorID " +
+            "and od.orgCode = rr.orgCode " +
             "and cmd.patientID = rr.patientID")
     Page<ReferralReviewPagingDto> findReferralReviewPageByDoctorID(Long doctorID, Pageable pageable);
 

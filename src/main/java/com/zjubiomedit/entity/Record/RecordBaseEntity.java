@@ -20,9 +20,12 @@ public abstract class RecordBaseEntity {
     @Column(length = 100)
     private String memo;
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date recordTime; // 记录实际测量时间
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
+    @Column(nullable = false)
     private Date createTime; // 记录insert时间，自动生成
-
+    @Column(nullable = false)
+    private Integer status = 0; // 是否产生预警标志位，0-未预警，1-已预警
 }

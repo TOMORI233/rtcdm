@@ -12,4 +12,5 @@ public class DoctorUserLoginDto {
     private String userName;
     private Integer auth;
     private String orgCode;
+    private Integer status;
 }

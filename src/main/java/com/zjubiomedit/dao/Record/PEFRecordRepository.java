@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author leiyi sheng
@@ -17,4 +18,8 @@ public interface PEFRecordRepository extends CrudRepository<PEFRecord, Long> {
     List<PEFRecord> findByPatientIDAndRecordTimeIsBetween(Long patientID, Date startDate, Date endDate);
 
     Page<PEFRecord> findByPatientID(Long patientID, Pageable pageable);
+
+    Optional<PEFRecord> findFirstByPatientIDAndStatusOrderByRecordTimeDesc(Long patientID, Integer status);
+
+    Optional<PEFRecord> findFirstByPatientIDOrderByRecordTimeDesc(Long patientID);
 }

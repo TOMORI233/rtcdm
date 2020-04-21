@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author leiyi sheng
@@ -17,4 +18,6 @@ public interface DiscomfortRecordRepository extends CrudRepository<DiscomfortRec
     List<DiscomfortRecord> findByPatientIDAndRecordTimeIsBetween(Long patientID, Date startDate, Date endDate);
 
     Page<DiscomfortRecord> findByPatientID(Long patientID, Pageable pageable);
+
+    Optional<DiscomfortRecord> findFirstByPatientIDAndStatusAndIsDiscomfortOrderByRecordTimeDesc(Long patientID, Integer status, Integer isDiscomfort);
 }

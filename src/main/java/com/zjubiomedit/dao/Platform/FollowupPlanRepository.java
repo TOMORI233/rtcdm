@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * @author leiyi sheng
@@ -25,7 +26,7 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
             "and fp.status = :status")
     Long CountByViewerIDAndStatusAndDate(Long viewerID, Integer status, Date startDate, Date endDate);
 
-    FollowupPlan findBySerialNo(Long serialNo);
+    Optional<FollowupPlan> findBySerialNoAndStatus(Long serialNo, Integer status);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.FollowupPagingDto" +
             "(fp.serialNo, fp.patientID, fp.planDate, fp.status, fp.followUpType, fp.memo, " +

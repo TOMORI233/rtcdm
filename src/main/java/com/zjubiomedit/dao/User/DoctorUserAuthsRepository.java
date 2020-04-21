@@ -27,7 +27,10 @@ public interface DoctorUserAuthsRepository extends CrudRepository<DoctorUserAuth
     @Query(value = "select auth from DoctorUserAuths where userID = :userID")
     Optional<Integer> findAuthById(@Param("userID") Long userID);
 
-    @Query(value = "select userName from DoctorUserAuths " +
+    @Query(value = "select name from DoctorUserAuths " +
             "where userID = :doctorID")
     String findDoctorNameByDoctorID(Long doctorID);
+
+    @Query("select count(userID) from DoctorUserAuths")
+    Long CountAll();
 }

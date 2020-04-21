@@ -31,6 +31,7 @@ public class OrgDict {
     @Column(length = 100)
     private String memo;
     private Integer itemSortValue;
+    @Column(nullable = false)
     private Integer isValid = 1;
 
 }

@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author leiyi sheng
@@ -17,4 +18,6 @@ public interface HADRecordRepository extends CrudRepository<HADRecord, Long> {
     List<HADRecord> findByPatientIDAndRecordTimeIsBetween(Long patientID, Date startDate, Date endDate);
 
     Page<HADRecord> findByPatientID(Long patientID, Pageable pageable);
+
+    Optional<HADRecord> findFirstByPatientIDAndStatusOrderByRecordTimeDesc(Long patientID, Integer recordUnwarned);
 }

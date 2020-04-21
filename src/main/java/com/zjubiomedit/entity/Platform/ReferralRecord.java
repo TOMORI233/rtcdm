@@ -31,7 +31,7 @@ public class ReferralRecord extends PlatformBaseEntity{
     @Column(nullable = false)
     private Integer status = 0; // 0-审核中，1-审核通过，2-审核不通过，3-结束转诊
     @Column(nullable = false, length = 20)
-    private String initiator;
+    private Long initiator;
     private Long reviewerID;
     @Column(length = 100)
     private String refuseReason;

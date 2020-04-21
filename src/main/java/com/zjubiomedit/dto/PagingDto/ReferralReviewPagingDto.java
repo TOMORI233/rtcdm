@@ -24,7 +24,6 @@ public class ReferralReviewPagingDto {
     private Integer manageStatus;
     private Integer complianceRate;
     // DoctorUserAuths
-    private String targetDoctorName; // name
     private String linkedDoctorName; // name
     private String linkedOrgCode;
     // OrgDict
