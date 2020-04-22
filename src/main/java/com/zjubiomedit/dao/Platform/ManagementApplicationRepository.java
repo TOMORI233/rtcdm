@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,4 +29,6 @@ public interface ManagementApplicationRepository extends JpaRepository<Managemen
             "and mar.patientID = pua.userID " +
             "and mar.patientID = pub.userID")
     Page<RegisterPagingDto> findByViewerID(@Param("viewerID") Long viewerID, Pageable pageable);
+
+    List<ManagementApplicationReview> findByStatus(Integer status);
 }

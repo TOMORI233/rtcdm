@@ -63,6 +63,9 @@ public class AutoServiceImpl implements AutoService {
     OrgDictRepository orgDictRepository;
     @Autowired
     COPDManageDetailRepository copdManageDetailRepository;
+    @Autowired
+    ManageServiceImpl manageService;
+
 
     private void insertAlert(Long patientID, String alertCode, String alertType, String alertName, String alertMsg, String alertReason) {
         try {
@@ -306,11 +309,15 @@ public class AutoServiceImpl implements AutoService {
     public void autoInsertDocUser(Long count) {
         DoctorUserAuths newDoc = new DoctorUserAuths();
         if (count <= 6) {
+            log.info("autoInsertHosUser " + count.toString());
             OrgDict orgDict = new OrgDict();
             orgDict.setOrgCode("H" + count.toString());
             orgDict.setIsValid(1);
             orgDict.setOrgName("医院" + count.toString());
-            orgDict.setParentOrgCode(String.valueOf(count - 1));
+            if (count > 1) {
+                Long parOrgNum = (count - 2) / 2 + 1;
+                orgDict.setParentOrgCode("H" + parOrgNum.toString());
+            }
             orgDictRepository.save(orgDict);
             newDoc.setUserName("hos" + count.toString());
             newDoc.setAuth(1);
@@ -318,45 +325,52 @@ public class AutoServiceImpl implements AutoService {
             newDoc.setOrgCode("H" + count.toString());
             newDoc.setPassword("1");
             doctorUserAuthsRepository.save(newDoc);
-        } else {
+        } else if (count <= 24) {
+            log.info("autoInsertDocUser " + count.toString());
             newDoc.setUserName("doc" + count.toString());
             newDoc.setAuth(0);
             newDoc.setName("医生" + count.toString());
-            newDoc.setOrgCode("H");
+            Long hosCodeNum = (count - 7) / 3 + 1;
+            newDoc.setOrgCode("H" + hosCodeNum.toString());
             newDoc.setPassword("1");
             doctorUserAuthsRepository.save(newDoc);
+        } else {
+            log.info("医生人满");
         }
     }
 
     @Override
     public void autoInsertPatUser(Long count) {
-        log.info("autoInsertPatUser " + count.toString());
-        PatientUserAuths patientUserAuths = new PatientUserAuths();
-        PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
-        ManagementApplicationReview managementApplicationReview = new ManagementApplicationReview();
-        patientUserAuths.setUserName("pat" + count.toString());
-        patientUserAuths.setPassword("1");
-        patientUserAuths.setStatus(10);
-        patientUserBaseInfo.setUserID(count);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(count.intValue() + 1950, Calendar.JANUARY, 1);
-        Date date = calendar.getTime();
-        patientUserBaseInfo.setDateOfBirth(date);
-        patientUserBaseInfo.setName("患者" + count.toString());
-        patientUserBaseInfo.setWeight(60.0f + count.floatValue());
-        patientUserBaseInfo.setHeight(170);
-        if (count % 2 == 0) {
-            patientUserBaseInfo.setSex(Utils.WOMAN);
+        if (count <= 54) {
+            log.info("autoInsertPatUser " + count.toString());
+            PatientUserAuths patientUserAuths = new PatientUserAuths();
+            PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
+            ManagementApplicationReview managementApplicationReview = new ManagementApplicationReview();
+            patientUserAuths.setUserName("pat" + count.toString());
+            patientUserAuths.setPassword("1");
+            patientUserAuths.setStatus(10);
+            patientUserBaseInfo.setUserID(count);
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(count.intValue() + 1950, Calendar.JANUARY, 1);
+            Date date = calendar.getTime();
+            patientUserBaseInfo.setDateOfBirth(date);
+            patientUserBaseInfo.setName("患者" + count.toString());
+            patientUserBaseInfo.setWeight(60.0f + count.floatValue());
+            patientUserBaseInfo.setHeight(170);
+            if (count % 2 == 0) {
+                patientUserBaseInfo.setSex(Utils.WOMAN);
+            } else {
+                patientUserBaseInfo.setSex(Utils.MAN);
+            }
+            managementApplicationReview.setPatientID(count);
+            managementApplicationReview.setHospitalID((count - 1) / 6 + 1);
+            managementApplicationReview.setDoctorID((count - 1) / 3 + 7);
+            patientUserAuthsRepository.save(patientUserAuths);
+            patientUserBaseInfoRepository.save(patientUserBaseInfo);
+            managementApplicationRepository.save(managementApplicationReview);
         } else {
-            patientUserBaseInfo.setSex(Utils.MAN);
+            log.info("患者人满");
         }
-        managementApplicationReview.setPatientID(count);
-        managementApplicationReview.setHospitalID(1L);
-//        managementApplicationReview.setDoctorID();
-        patientUserAuthsRepository.save(patientUserAuths);
-        patientUserBaseInfoRepository.save(patientUserBaseInfo);
-        managementApplicationRepository.save(managementApplicationReview);
-        log.info(patientUserBaseInfo.toString());
     }
 
     @Override
@@ -371,7 +385,8 @@ public class AutoServiceImpl implements AutoService {
 
     @Override
     public void autoInsertRecord(Long patientID) {
-        try {
+        if (patientID < 54) { //ID:54患者无记录
+            log.info("autoInsertRecord " + patientID.toString());
             Calendar calendar = Calendar.getInstance();
             for (int index = 0; index < 3; index++) {
                 calendar.set(2020, Calendar.MARCH, 1 + 9 * index);
@@ -417,9 +432,10 @@ public class AutoServiceImpl implements AutoService {
                 smwtRecord.setValue(300);
                 smwtRecordRepository.save(smwtRecord);
             }
-        } catch (NullPointerException e) {
-            throw new CommonJsonException(ErrorEnum.E_10005);
+        } else {
+            log.info("自动插入记录上限");
         }
+
     }
 
     @Override
@@ -437,6 +453,20 @@ public class AutoServiceImpl implements AutoService {
             referralRecord.setInitiator(doctorID);
             referralRecordRepository.save(referralRecord);
         });
+    }
+
+    @Override
+    public void autoReviewRegister() {
+        List<ManagementApplicationReview> reviewList = managementApplicationRepository.findByStatus(Utils.REVIEW_UNREVIEWED);
+        if (reviewList.isEmpty()) {
+            log.info("无注册需审核");
+        } else {
+            for (ManagementApplicationReview review : reviewList) {
+                log.info("ID:" + review.getPatientID().toString() + "的申请已自动通过");
+                manageService.reviewRegister(review.getSerialNo(), Utils.REVIEW_APPROVED, review.getDoctorID(), review.getHospitalID(), null);
+            }
+        }
+
     }
 
 

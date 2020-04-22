@@ -18,15 +18,6 @@ public class AutoTask {
     @Autowired
     AutoServiceImpl autoService;
 
-//    @Async
-//    @Scheduled(cron = "*/6 * * * * ?")
-//    public void autoInsertUserAndRecord() {
-//        log.info("autoInsertUserAndRecord");
-//        autoService.autoInsertDocUser(autoService.getDocCount());
-//        autoService.autoInsertPatUser(autoService.getPatCount());
-//        autoService.autoInsertRecord(autoService.getPatCount() - 1);
-//    }
-
     @Async
     @Scheduled(cron = "0 0 0 ? * 1")
 //    @Scheduled(cron = "*/10 * * * * ?") //test
@@ -34,16 +25,6 @@ public class AutoTask {
         log.info("generateWeeklyAlert");
         autoService.autoGenerateWeeklyAlert();
     }
-
-//    public void generateComplianceRate() {
-//        //需要确定医嘱次数
-//        autoService.autoGenerateCompliance();
-//    }
-//
-//    public void generateManagePlan() {
-//        //详细计划未定
-//        autoService.autoGenerateManagePlan();
-//    }
 
     @Async
     @Scheduled(cron = "0 15 0 * * ?")
@@ -60,5 +41,36 @@ public class AutoTask {
         log.info("generateEvaluation");
         autoService.autoGenerateEvaluation();
     }
+
+//    @Async
+//    @Scheduled(cron = "0 45 0 * * 1")
+//        public void generateComplianceRate() {
+//        //需要确定医嘱次数
+//        autoService.autoGenerateCompliance();
+//    }
+//
+//    @Async
+//    @Scheduled(cron = "0 0 1 * * 1")
+//    public void generateManagePlan() {
+//        //详细计划未定
+//        autoService.autoGenerateManagePlan();
+//    }
+
+    // 测试用-----------------------------------------------------------------
+    // 自动插入测试用医生患者账号和各种记录
+    @Async
+    @Scheduled(cron = "*/2 * * * * ?")
+    public void insertUserAndRecord() {
+        autoService.autoInsertDocUser(autoService.getDocCount());
+        autoService.autoInsertPatUser(autoService.getPatCount());
+        autoService.autoInsertRecord(autoService.getPatCount() - 1);
+    }
+    // 需要自动审核患者注册时使用，测试完审核页面后
+//    @Async
+//    @Scheduled(cron = "*/30 * * * * ?")
+//    public void autoReview(){
+//        log.info("autoReviewRegisterAndReferral");
+//        autoService.autoReviewRegister();
+//    }
 
 }

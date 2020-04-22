@@ -22,4 +22,6 @@ public interface AutoService {
     void autoInsertRecord(Long patientID);
 
     void autoInsertReferral(Long patientID);
+
+    void autoReviewRegister();
 }
