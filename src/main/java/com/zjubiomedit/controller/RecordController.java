@@ -4,6 +4,8 @@ import com.zjubiomedit.dto.PatientEndDto.RecordCommitDto;
 import com.zjubiomedit.service.impl.RecordServiceImpl;
 import com.zjubiomedit.util.Result;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +35,9 @@ public class RecordController {
     }
 
     @ApiOperation(value = "【综合】获取时间区间数据记录", response = Result.class)
+    @ApiImplicitParams(@ApiImplicitParam(name = "type", dataType = "int", value = "1-CAT 2-HAD 3-PEF 4-DRUG 5-DIS 6-EVA 7-WEI 8-SMW", required = true, defaultValue = "1", example = "1"))
     @GetMapping(value = "/fetch/list")
-    public Result dataFetchList(@RequestParam(value = "type") Integer type,
+    public Result dataFetchList(Integer type,
                                 @RequestParam(value = "patientID") Long patientID,
                                 @RequestParam(value = "startDate") Date startDate,
                                 @RequestParam(value = "endDate") Date endDate){
@@ -53,8 +56,9 @@ public class RecordController {
 //    }
 
     @ApiOperation(value = "【综合】获取最近N条数据记录", response = Result.class)
+    @ApiImplicitParams(@ApiImplicitParam(name = "type", dataType = "int", value = "1-CAT 2-HAD 3-PEF 4-DRUG 5-DIS 6-EVA 7-WEI 8-SMW", required = true, defaultValue = "1", example = "1"))
     @GetMapping(value = "/fetch/latest")
-    public Result dataFetchLatest(@RequestParam(value = "type") Integer type,
+    public Result dataFetchLatest(Integer type,
                                   @RequestParam(value = "patientID") Long patientID,
                                   @RequestParam(value = "N") Integer N){
         return recordService.fetchLatestRecord(type, patientID, N);

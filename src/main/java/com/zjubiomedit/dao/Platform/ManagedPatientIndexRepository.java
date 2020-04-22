@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author leiyi sheng
@@ -192,31 +193,33 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
     @Query(value = "select new com.zjubiomedit.dto.DoctorEndDto.PatientListDto" +
             "(pub.userID, pub.name) " +
             "from PatientUserBaseInfo pub " +
-            "where (:patientType = 0 and pub.userID in " + //全部
-            "(select patientID from ManagedPatientIndex " +
-            "where doctorID = :viewerID or hospitalID = :viewerID) " +
+            "where (:patientType = 0 and (pub.userID in " + //全部
+            "(select mpi.patientID from ManagedPatientIndex mpi " +
+            "where mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID) " +
             "or pub.userID in " +
-            "(select patientID from ReferralRecord " +
-            "where doctorID = :viewerID or orgCode in" +
-            "(select orgCode from DoctorUserAuths " +
-            "where userID = :viewerID and auth = 1))) " +
+            "(select rr.patientID from ReferralRecord rr " +
+            "where rr.status = 1 " +
+            "and (rr.doctorID = :viewerID or rr.orgCode in" +
+            "(select dua.orgCode from DoctorUserAuths dua " +
+            "where dua.userID = :viewerID and dua.auth = 1)))))" +
 
             "or (:patientType = 1 and pub.userID in " + //管理中
-            "(select patientID from ManagedPatientIndex " +
-            "where manageStatus = 0 " +
-            "and (doctorID = :viewerID or hospitalID = :viewerID))) " +
+            "(select mpi.patientID from ManagedPatientIndex mpi " +
+            "where mpi.manageStatus = 0 " +
+            "and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID))) " +
 
             "or (:patientType = 2 and pub.userID in " + //转出
-            "(select patientID from ManagedPatientIndex " +
-            "where (manageStatus = 1 or manageStatus = 2) " +
-            "and (doctorID = :viewerID or hospitalID = :viewerID))) " +
+            "(select mpi.patientID from ManagedPatientIndex mpi " +
+            "where (mpi.manageStatus = 1 or mpi.manageStatus = 2) " +
+            "and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID))) " +
 
             "or (:patientType = 3 and pub.userID in " + //转入
-            "(select patientID from ReferralRecord " +
-            "where doctorID = :viewerID or orgCode in" +
-            "(select orgCode from DoctorUserAuths " +
-            "where userID = :viewerID and auth = 1)))")
+            "(select rr.patientID from ReferralRecord rr " +
+            "where rr.status = 1 " +
+            "and (rr.doctorID = :viewerID or rr.orgCode in" +
+            "(select dua.orgCode from DoctorUserAuths dua " +
+            "where dua.userID = :viewerID and dua.auth = 1))))")
     List<PatientListDto> findPatientByViewerIDAndType(@Param("viewerID") Long viewerID, @Param("patientType") Integer patientType);
 
-    ManagedPatientIndex findByPatientID(Long patientID);
+    Optional<ManagedPatientIndex> findByPatientID(Long patientID);
 }

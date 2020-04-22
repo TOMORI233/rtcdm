@@ -28,7 +28,7 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
             "where ar.status = 0 " +
             "and ar.patientID in " +
             "(select mpi.patientID from ManagedPatientIndex mpi " +
-            "where mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID)" +
+            "where mpi.manageStatus <> 9 and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID))" +
             "and pub.userID = ar.patientID " +
             "and mpi.patientID = ar.patientID " +
             "and dua.userID = mpi.doctorID " +
@@ -41,7 +41,7 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
             "where ar.status = 0 " +
             "and ar.patientID in " +
             "(select mpi.patientID from ManagedPatientIndex mpi " +
-            "where mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID)")
+            "where mpi.manageStatus <> 9 and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID))")
     Integer CountPatientByViewerID(@Param("viewerID") Long viewerID);
 
     Optional<AlertRecord> findBySerialNoAndStatus(Long serialNo, Integer status);
@@ -59,9 +59,10 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
             "where ar.status = 0 " +
             "and ar.patientID in " +
             "(select patientID from ReferralRecord " +
-            "where doctorID = :viewerID or orgCode in" +
+            "where status = 1 " +
+            "and (doctorID = :viewerID or orgCode in" +
             "(select orgCode from DoctorUserAuths " +
-            "where userID = :viewerID and auth = 1))" +
+            "where userID = :viewerID and auth = 1)))" +
             "and pub.userID = ar.patientID " +
             "and mpi.patientID = ar.patientID " +
             "and dua.userID = mpi.doctorID " +
@@ -74,8 +75,9 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
             "where ar.status = 0 " +
             "and ar.patientID in " +
             "(select patientID from ReferralRecord " +
-            "where doctorID = :viewerID or orgCode in" +
+            "where status = 1 " +
+            "and (doctorID = :viewerID or orgCode in" +
             "(select orgCode from DoctorUserAuths " +
-            "where userID = :viewerID and auth = 1))")
+            "where userID = :viewerID and auth = 1)))")
     Integer CountReferralPatientByViewerID(Long viewerID);
 }

@@ -3,6 +3,7 @@ package com.zjubiomedit.controller;
 import com.zjubiomedit.dto.DoctorEndDto.FollowupPlanCreateDto;
 import com.zjubiomedit.dto.DoctorEndDto.FollowupRecordDto;
 import com.zjubiomedit.dto.DoctorEndDto.ReferralApplyDto;
+import com.zjubiomedit.service.impl.AutoServiceImpl;
 import com.zjubiomedit.service.impl.ManageServiceImpl;
 import com.zjubiomedit.util.Result;
 import io.swagger.annotations.Api;
@@ -25,7 +26,9 @@ import java.util.Date;
 public class ManageController {
 
     @Autowired
-    private ManageServiceImpl manageService;
+    ManageServiceImpl manageService;
+    @Autowired
+    AutoServiceImpl autoService;
 
     /**
      * 审核
@@ -41,7 +44,7 @@ public class ManageController {
     @ApiOperation(value = "【医生/医院】审核（通过/拒绝）患者", response = Result.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "doctorID", dataType = "Long", value = "接收患者医生ID", required = true, example = "1"),
-            @ApiImplicitParam(name = "status", dataType = "Integer", value = "1-审核通过，2-审核不通过，3-忽略", required = true, defaultValue = "1", example = "1")
+            @ApiImplicitParam(name = "status", dataType = "int", value = "1-审核通过，2-审核不通过，3-忽略", required = true, defaultValue = "1", example = "1")
     })
     @PostMapping(value = "/register/audit")
     public Result patientRegisterAudit(@RequestParam(value = "serialNo") Long serialNo,
@@ -56,7 +59,7 @@ public class ManageController {
      * 管理
      */
     @ApiOperation(value = "【医生】获取个人管理的患者管理索引信息（分页）", response = Result.class)
-    @ApiImplicitParams({@ApiImplicitParam(name = "type", dataType = "Integer", value = "0-全部 1-管理中 2-转出 3-转入", required = true, defaultValue = "0", example = "0")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", dataType = "int", value = "0-全部 1-管理中 2-转出 3-转入", required = true, defaultValue = "0", example = "0")})
     @GetMapping(value = "/index/page/doctor")
     public Result doctorManageIndexPage(@RequestParam(value = "doctorID") Long doctorID,
                                         @RequestParam(value = "pageIndex") Integer pageIndex,
@@ -66,7 +69,7 @@ public class ManageController {
     }
 
     @ApiOperation(value = "【医生/医院】获取某院患者管理索引信息（分页）", response = Result.class)
-    @ApiImplicitParams({@ApiImplicitParam(name = "type", dataType = "Integer", value = "0-全部 1-管理中 2-转出 3-转入", required = true, defaultValue = "0", example = "0")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", dataType = "int", value = "0-全部 1-管理中 2-转出 3-转入", required = true, defaultValue = "0", example = "0")})
     @GetMapping(value = "/index/page/hospital")
     public Result hospitalManageIndexPage(@RequestParam(value = "orgCode") String orgCode,
                                           @RequestParam(value = "pageIndex") Integer pageIndex,
@@ -88,7 +91,7 @@ public class ManageController {
     }
 
     @ApiOperation(value = "【医生/医院】获取患者ID姓名列表", response = Result.class)
-    @ApiImplicitParams({@ApiImplicitParam(name = "type", dataType = "Integer", value = "0-全部 1-管理中 2-转出 3-转入", required = true, defaultValue = "0", example = "0")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "type", dataType = "int", value = "0-全部 1-管理中 2-转出 3-转入", required = true, defaultValue = "0", example = "0")})
     @GetMapping(value = "/index/patient/namelist")
     public Result doctorPatientList(@RequestParam(value = "viewerID") Long viewerID,
                                     Integer type) {
@@ -107,7 +110,7 @@ public class ManageController {
     }
 
     @ApiOperation(value = "【医生/医院】获取本院随访列表（分页）", response = Result.class)
-    @ApiImplicitParams({@ApiImplicitParam(name = "status", dataType = "Integer", value = "0-待随访 1-已随访 2-已失效/忽略", required = true, defaultValue = "0", example = "0")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "status", dataType = "int", value = "0-待随访 1-已随访 2-已失效/忽略", required = true, defaultValue = "0", example = "0")})
     @GetMapping(value = "/followup/page/this")
     public Result patientFollowupPage(@RequestParam(value = "viewerID") Long viewerID,
                                       Integer status,
@@ -127,7 +130,7 @@ public class ManageController {
     }
 
     @ApiOperation(value = "【医生/医院】获取转诊随访列表（分页）", response = Result.class)
-    @ApiImplicitParams({@ApiImplicitParam(name = "status", dataType = "Integer", value = "0-待随访 1-已随访 2-已失效/忽略", required = true, defaultValue = "0", example = "0")})
+    @ApiImplicitParams({@ApiImplicitParam(name = "status", dataType = "int", value = "0-待随访 1-已随访 2-已失效/忽略", required = true, defaultValue = "0", example = "0")})
     @GetMapping(value = "/followup/page/referral")
     public Result ReferralPatientFollowupPage(@RequestParam(value = "viewerID") Long viewerID,
                                               Integer status,
@@ -228,6 +231,13 @@ public class ManageController {
     @PostMapping(value = "/referral/apply")
     public Result referralApply(@RequestBody ReferralApplyDto referralApplyDto) {
         return manageService.applyReferral(referralApplyDto);
+    }
+
+    @ApiOperation(value = "【测试】自动转出申请", response = Result.class)
+    @PostMapping(value = "/referral/apply/auto")
+    public Result autoReferralApply(@RequestParam(value = "patientID") Long patientID) {
+        autoService.autoInsertReferral(patientID);
+        return null;
     }
 
     @ApiOperation(value = "【医生】转回病人", response = Result.class)

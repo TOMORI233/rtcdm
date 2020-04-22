@@ -365,10 +365,12 @@ public class ManageServiceImpl implements ManageService {
                     record.setDoctorID(doctorID);
                     record.setStatus(Utils.REFERRAL_APPROVED);
                     record.setReviewDateTime(new Date());
-                    ManagedPatientIndex thisPatient = managedPatientIndexRepository.findByPatientID(record.getPatientID());
-                    thisPatient.setManageStatus(record.getReferralType());
-                    referralRecordRepository.save(record);
-                    managedPatientIndexRepository.save(thisPatient);
+                    Optional<ManagedPatientIndex> thisPatientOptional = managedPatientIndexRepository.findByPatientID(record.getPatientID());
+                    thisPatientOptional.ifPresent(thisPatient->{
+                        thisPatient.setManageStatus(record.getReferralType());
+                        referralRecordRepository.save(record);
+                        managedPatientIndexRepository.save(thisPatient);
+                    });
                 }
             });
             return new Result();
@@ -387,12 +389,14 @@ public class ManageServiceImpl implements ManageService {
                     record.setStatus(Utils.REFERRAL_OVER);
                     record.setEndDateTime(new Date());
                     record.setReceipt(receipt);
-                    ManagedPatientIndex thisPatient = managedPatientIndexRepository.findByPatientID(record.getPatientID());
-                    thisPatient.setManageStatus(Utils.MANAGE_PROCESSING);
-                    referralRecordRepository.save(record);
-                    managedPatientIndexRepository.save(thisPatient);
-                    result.setCode(0);
-                    result.setMessage("success");
+                    Optional<ManagedPatientIndex> thisPatientOptional = managedPatientIndexRepository.findByPatientID(record.getPatientID());
+                    thisPatientOptional.ifPresent(thisPatient -> {
+                        thisPatient.setManageStatus(Utils.MANAGE_PROCESSING);
+                        referralRecordRepository.save(record);
+                        managedPatientIndexRepository.save(thisPatient);
+                        result.setCode(0);
+                        result.setMessage("success");
+                    });
                 }
             });
             return result;

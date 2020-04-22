@@ -143,6 +143,9 @@ public class RecordServiceImpl implements RecordService {
                 case Utils.SMWT:
                     List<SMWTRecord> smwtRecordList = smwtRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
                     return new Result(smwtRecordList);
+                case Utils.EVALUATION:
+                    List<EvaluationRecord> evaluationRecordList = evaluationRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    return new Result(evaluationRecordList);
                 default:
                     return new Result(ErrorEnum.E_10006);
             }
@@ -163,26 +166,29 @@ public class RecordServiceImpl implements RecordService {
             Pageable pageable = PageRequest.of(0, n, Sort.Direction.DESC, "recordTime");
             switch (type) {
                 case Utils.CAT:
-                    Page<CATRecord> catRecordList = catRecordRepository.findByPatientID(patientID, pageable);
-                    return new Result(catRecordList);
+                    Page<CATRecord> catRecordPage = catRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(catRecordPage);
                 case Utils.DISCOMFORT:
-                    Page<DiscomfortRecord> discomfortRecordList = discomfortRecordRepository.findByPatientID(patientID, pageable);
-                    return new Result(discomfortRecordList);
+                    Page<DiscomfortRecord> discomfortRecordPage = discomfortRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(discomfortRecordPage);
                 case Utils.DRUG:
-                    Page<DrugRecord> drugRecordList = drugRecordRepository.findByPatientID(patientID, pageable);
-                    return new Result(drugRecordList);
+                    Page<DrugRecord> drugRecordPage = drugRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(drugRecordPage);
                 case Utils.HAD:
-                    Page<HADRecord> hadRecordList = hadRecordRepository.findByPatientID(patientID, pageable);
-                    return new Result(hadRecordList);
+                    Page<HADRecord> hadRecordPage = hadRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(hadRecordPage);
                 case Utils.PEF:
-                    Page<PEFRecord> pefRecordList = pefRecordRepository.findByPatientID(patientID, pageable);
-                    return new Result(pefRecordList);
+                    Page<PEFRecord> pefRecordPage = pefRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(pefRecordPage);
                 case Utils.WEIGHT:
-                    Page<WeightRecord> weightRecordList = weightRecordRepository.findByPatientID(patientID, pageable);
-                    return new Result(weightRecordList);
+                    Page<WeightRecord> weightRecordPage = weightRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(weightRecordPage);
                 case Utils.SMWT:
-                    Page<SMWTRecord> smwtRecordList = smwtRecordRepository.findByPatientID(patientID, pageable);
-                    return new Result(smwtRecordList);
+                    Page<SMWTRecord> smwtRecordPage = smwtRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(smwtRecordPage);
+                case Utils.EVALUATION:
+                    Page<EvaluationRecord> evaluationRecordPage = evaluationRecordRepository.findByPatientID(patientID, pageable);
+                    return new Result(evaluationRecordPage);
                 default:
                     return new Result(ErrorEnum.E_10006);
             }

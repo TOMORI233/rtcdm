@@ -25,8 +25,8 @@ public interface ReferralRecordRepository extends JpaRepository<ReferralRecord, 
             "where userID = :hospitalID)" +
             "and pub.userID = rr.patientID " +
             "and mpi.patientID = rr.patientID " +
-            "and dua.userID = mpi.hospitalID " +
-            "and od.orgCode = rr.orgCode " +
+            "and dua.userID = mpi.doctorID " +
+            "and od.orgCode = dua.orgCode " +
             "and cmd.patientID = rr.patientID")
     Page<ReferralReviewPagingDto> findReferralReviewPageByHospitalID(Long hospitalID, Pageable pageable);
 
@@ -43,7 +43,7 @@ public interface ReferralRecordRepository extends JpaRepository<ReferralRecord, 
             "and pub.userID = rr.patientID " +
             "and mpi.patientID = rr.patientID " +
             "and dua.userID = mpi.doctorID " +
-            "and od.orgCode = rr.orgCode " +
+            "and od.orgCode = dua.orgCode " +
             "and cmd.patientID = rr.patientID")
     Page<ReferralReviewPagingDto> findReferralReviewPageByDoctorID(Long doctorID, Pageable pageable);
 

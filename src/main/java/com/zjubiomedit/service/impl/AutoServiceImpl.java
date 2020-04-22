@@ -1,14 +1,14 @@
 package com.zjubiomedit.service.impl;
 
 import com.zjubiomedit.config.exception.CommonJsonException;
-import com.zjubiomedit.dao.Platform.AlertRecordRepository;
-import com.zjubiomedit.dao.Platform.ManagementApplicationRepository;
+import com.zjubiomedit.dao.Dict.OrgDictRepository;
+import com.zjubiomedit.dao.Platform.*;
 import com.zjubiomedit.dao.Record.*;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
-import com.zjubiomedit.entity.Platform.AlertRecord;
-import com.zjubiomedit.entity.Platform.ManagementApplicationReview;
+import com.zjubiomedit.entity.Dict.OrgDict;
+import com.zjubiomedit.entity.Platform.*;
 import com.zjubiomedit.entity.Record.*;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
@@ -46,24 +46,23 @@ public class AutoServiceImpl implements AutoService {
     @Autowired
     DiscomfortRecordRepository discomfortRecordRepository;
     @Autowired
+    DrugRecordRepository drugRecordRepository;
+    @Autowired
+    SMWTRecordRepository smwtRecordRepository;
+    @Autowired
     AlertRecordRepository alertRecordRepository;
     @Autowired
     EvaluationRecordRepository evaluationRecordRepository;
     @Autowired
     ManagementApplicationRepository managementApplicationRepository;
-
-    @Override
-    public void autoInsertDocUser(Long count) {
-        log.info("autoInsertDocUser " + count.toString());
-        DoctorUserAuths newDoc = new DoctorUserAuths();
-        newDoc.setUserName("doc" + count.toString());
-        newDoc.setAuth(0);
-        newDoc.setName("医生" + count.toString());
-        newDoc.setOrgCode("A1");
-        newDoc.setPassword("1");
-        doctorUserAuthsRepository.save(newDoc);
-        log.info(newDoc.toString());
-    }
+    @Autowired
+    ReferralRecordRepository referralRecordRepository;
+    @Autowired
+    ManagedPatientIndexRepository managedPatientIndexRepository;
+    @Autowired
+    OrgDictRepository orgDictRepository;
+    @Autowired
+    COPDManageDetailRepository copdManageDetailRepository;
 
     private void insertAlert(Long patientID, String alertCode, String alertType, String alertName, String alertMsg, String alertReason) {
         try {
@@ -283,7 +282,49 @@ public class AutoServiceImpl implements AutoService {
                 }
                 evaluationRecord.setValue(resultValue);
                 evaluationRecordRepository.save(evaluationRecord);
+                Optional<COPDManageDetail> detailOptional = copdManageDetailRepository.findByPatientID(patientID);
+                detailOptional.ifPresent(detail -> {
+                    switch (resultValue) {
+                        case 80:
+                        case 60:
+                            detail.setManageLevel(Utils.LEVEL_FIRST);
+                            break;
+                        case 40:
+                        case 20:
+                            detail.setManageLevel(Utils.LEVEL_SECOND);
+                            break;
+                        default:
+                            break;
+                    }
+                    copdManageDetailRepository.save(detail);
+                });
             }));
+        }
+    }
+
+    @Override
+    public void autoInsertDocUser(Long count) {
+        DoctorUserAuths newDoc = new DoctorUserAuths();
+        if (count <= 6) {
+            OrgDict orgDict = new OrgDict();
+            orgDict.setOrgCode("H" + count.toString());
+            orgDict.setIsValid(1);
+            orgDict.setOrgName("医院" + count.toString());
+            orgDict.setParentOrgCode(String.valueOf(count - 1));
+            orgDictRepository.save(orgDict);
+            newDoc.setUserName("hos" + count.toString());
+            newDoc.setAuth(1);
+            newDoc.setName("医院" + count.toString());
+            newDoc.setOrgCode("H" + count.toString());
+            newDoc.setPassword("1");
+            doctorUserAuthsRepository.save(newDoc);
+        } else {
+            newDoc.setUserName("doc" + count.toString());
+            newDoc.setAuth(0);
+            newDoc.setName("医生" + count.toString());
+            newDoc.setOrgCode("H");
+            newDoc.setPassword("1");
+            doctorUserAuthsRepository.save(newDoc);
         }
     }
 
@@ -327,4 +368,76 @@ public class AutoServiceImpl implements AutoService {
     public Long getPatCount() {
         return patientUserAuthsRepository.CountAll() + 1;
     }
+
+    @Override
+    public void autoInsertRecord(Long patientID) {
+        try {
+            Calendar calendar = Calendar.getInstance();
+            for (int index = 0; index < 3; index++) {
+                calendar.set(2020, Calendar.MARCH, 1 + 9 * index);
+                Date date = calendar.getTime();
+
+                CATRecord catRecord = new CATRecord();
+                catRecord.setPatientID(patientID);
+                catRecord.setRecordTime(date);
+                catRecord.setScore(11 + index * 10);
+                catRecordRepository.save(catRecord);
+
+                PEFRecord pefRecord = new PEFRecord();
+                pefRecord.setPatientID(patientID);
+                pefRecord.setRecordTime(date);
+                pefRecord.setValue(200 + index * 50);
+                pefRecordRepository.save(pefRecord);
+
+                HADRecord hadRecord = new HADRecord();
+                hadRecord.setPatientID(patientID);
+                hadRecord.setRecordTime(date);
+                hadRecord.setAnxiety(10 + index * 4);
+                hadRecord.setDepression(10 + index * 4);
+                hadRecord.setScore(20 + index * 8);
+                hadRecordRepository.save(hadRecord);
+
+                DiscomfortRecord discomfortRecord = new DiscomfortRecord();
+                discomfortRecord.setPatientID(patientID);
+                discomfortRecord.setRecordTime(date);
+                discomfortRecord.setIsDiscomfort(Utils.IS_DISCOMFORT);
+                String s = String.valueOf(index + 1);
+                discomfortRecord.setSymptom("不适症状" + s);
+                discomfortRecordRepository.save(discomfortRecord);
+
+                DrugRecord drugRecord = new DrugRecord();
+                drugRecord.setPatientID(patientID);
+                drugRecord.setRecordTime(date);
+                drugRecord.setDrugName("药" + s);
+                drugRecordRepository.save(drugRecord);
+
+                SMWTRecord smwtRecord = new SMWTRecord();
+                smwtRecord.setPatientID(patientID);
+                smwtRecord.setRecordTime(date);
+                smwtRecord.setValue(300);
+                smwtRecordRepository.save(smwtRecord);
+            }
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10005);
+        }
+    }
+
+    @Override
+    public void autoInsertReferral(Long patientID) {
+        Optional<ManagedPatientIndex> indexOptional = managedPatientIndexRepository.findByPatientID(patientID);
+        indexOptional.ifPresent(managedPatientIndex -> {
+            Long doctorID = managedPatientIndex.getDoctorID();
+            ReferralRecord referralRecord = new ReferralRecord();
+            referralRecord.setPatientID(patientID);
+            referralRecord.setReferralType(Utils.REFERRAL_TYPE_UP);
+            referralRecord.setReferralPurpose(0);
+            referralRecord.setReferralReason("急性加重");
+//            referralRecord.setDoctorID(null);
+            referralRecord.setOrgCode("H1");
+            referralRecord.setInitiator(doctorID);
+            referralRecordRepository.save(referralRecord);
+        });
+    }
+
+
 }

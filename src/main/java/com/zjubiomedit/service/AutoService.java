@@ -18,4 +18,8 @@ public interface AutoService {
     Long getDocCount();
 
     Long getPatCount();
+
+    void autoInsertRecord(Long patientID);
+
+    void autoInsertReferral(Long patientID);
 }
