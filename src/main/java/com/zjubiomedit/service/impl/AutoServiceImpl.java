@@ -285,6 +285,7 @@ public class AutoServiceImpl implements AutoService {
                 }
                 evaluationRecord.setValue(resultValue);
                 evaluationRecordRepository.save(evaluationRecord);
+                // 评级细则待定
                 Optional<COPDManageDetail> detailOptional = copdManageDetailRepository.findByPatientID(patientID);
                 detailOptional.ifPresent(detail -> {
                     switch (resultValue) {
@@ -363,7 +364,7 @@ public class AutoServiceImpl implements AutoService {
                 patientUserBaseInfo.setSex(Utils.MAN);
             }
             managementApplicationReview.setPatientID(count);
-            managementApplicationReview.setHospitalID((count - 1) / 6 + 1);
+            managementApplicationReview.setHospitalID((count - 1) / 9 + 1);
             managementApplicationReview.setDoctorID((count - 1) / 3 + 7);
             patientUserAuthsRepository.save(patientUserAuths);
             patientUserBaseInfoRepository.save(patientUserBaseInfo);

@@ -12,18 +12,15 @@ import com.zjubiomedit.service.ManageService;
 import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
 import com.zjubiomedit.util.enums.ErrorEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+@Slf4j
 @Service
 public class ManageServiceImpl implements ManageService {
 
@@ -107,7 +104,26 @@ public class ManageServiceImpl implements ManageService {
     public Result pagingPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset) {
         try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
-            Page<AlertPagingDto> page = alertRecordRepository.findAlertPageByViewerID(viewerID, pageable);
+            List<AlertBaseInfo> baseList = alertRecordRepository.findAlertPageByViewerIDAndStatus(viewerID, Utils.ALERT_UNPROCESSED);
+            HashMap<Long, AlertPagingDto> map = new HashMap<>();
+            for(AlertBaseInfo baseInfo:baseList){
+                if(map.containsKey(baseInfo.getPatientID())){
+                    AlertUnit newUnit = new AlertUnit();
+                    BeanUtils.copyProperties(baseInfo, newUnit);
+                    map.get(baseInfo.getPatientID()).getAlertUnitList().add(newUnit);
+                } else {
+                    AlertPagingDto newPat = new AlertPagingDto();
+                    BeanUtils.copyProperties(baseInfo, newPat);
+                    AlertUnit newUnit = new AlertUnit();
+                    BeanUtils.copyProperties(baseInfo, newUnit);
+                    List<AlertUnit> newList = new LinkedList<>();
+                    newList.add(newUnit);
+                    newPat.setAlertUnitList(newList);
+                    map.put(baseInfo.getPatientID(), newPat);
+                }
+            }
+            List<AlertPagingDto> pageList = new LinkedList<>(map.values());
+            Page<AlertPagingDto> page = new PageImpl<>(pageList, pageable, pageList.size());
             return new Result(page);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
@@ -442,7 +458,26 @@ public class ManageServiceImpl implements ManageService {
     public Result pagingReferralPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset) {
         try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
-            Page<AlertPagingDto> page = alertRecordRepository.findReferralAlertPageByViewerID(viewerID, pageable);
+            List<AlertBaseInfo> baseList = alertRecordRepository.findReferralAlertPageByViewerIDAndStatus(viewerID, Utils.ALERT_UNPROCESSED);
+            HashMap<Long, AlertPagingDto> map = new HashMap<>();
+            for(AlertBaseInfo baseInfo:baseList){
+                if(map.containsKey(baseInfo.getPatientID())){
+                    AlertUnit newUnit = new AlertUnit();
+                    BeanUtils.copyProperties(baseInfo, newUnit);
+                    map.get(baseInfo.getPatientID()).getAlertUnitList().add(newUnit);
+                } else {
+                    AlertPagingDto newPat = new AlertPagingDto();
+                    BeanUtils.copyProperties(baseInfo, newPat);
+                    AlertUnit newUnit = new AlertUnit();
+                    BeanUtils.copyProperties(baseInfo, newUnit);
+                    List<AlertUnit> newList = new LinkedList<>();
+                    newList.add(newUnit);
+                    newPat.setAlertUnitList(newList);
+                    map.put(baseInfo.getPatientID(), newPat);
+                }
+            }
+            List<AlertPagingDto> pageList = new LinkedList<>(map.values());
+            Page<AlertPagingDto> page = new PageImpl<>(pageList, pageable, pageList.size());
             return new Result(page);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
