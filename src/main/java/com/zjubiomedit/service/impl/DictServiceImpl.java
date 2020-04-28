@@ -2,7 +2,6 @@ package com.zjubiomedit.service.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.zjubiomedit.config.exception.CommonJsonException;
 import com.zjubiomedit.dao.Dict.DivisionDictRepository;
 import com.zjubiomedit.dao.Dict.OrgDictRepository;
@@ -82,10 +81,8 @@ public class DictServiceImpl implements DictService {
     }
 
     @Override
-    public Result getOrgByDivision(JsonObject jsonObject) {
+    public Result getOrgByDivision(String divisionCode) {
         try {
-            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-            String divisionCode = jsonObject.get("divisionCode").getAsString();
             List<OrgDict> orgDicts = orgDictRepository.findByDivisionCodeAndIsValid(divisionCode, Utils.VALID);
             return new Result(orgDicts);
 //        return new Result(gson.toJson(orgDicts))

@@ -20,7 +20,7 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
     @Query(value = "select count(distinct fp.patientID) from FollowupPlan fp " +
             "where fp.patientID in " +
             "(select mpi.patientID from ManagedPatientIndex mpi " +
-            "where mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID) " +
+            "where mpi.manageStatus <> 9 and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID)) " +
             "and fp.planDate > :startDate " +
             "and fp.planDate < :endDate " +
             "and fp.status = :status")
@@ -38,7 +38,7 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
             "from FollowupPlan fp, PatientUserBaseInfo pub, ManagedPatientIndex mpi, DoctorUserAuths dua, OrgDict od, COPDManageDetail cmd " +
             "where fp.patientID in " +
             "(select mpi.patientID from ManagedPatientIndex mpi " +
-            "where mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID) " +
+            "where mpi.manageStatus <> 9 and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID)) " +
             "and fp.status = :status " +
             "and fp.planDate > :startDate and fp.planDate < :endDate " +
             "and pub.userID = fp.patientID " +

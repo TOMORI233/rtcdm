@@ -58,13 +58,13 @@ public class AutoTask {
 
     // 测试用-----------------------------------------------------------------
     // 自动插入测试用医生患者账号和各种记录
-    @Async
-    @Scheduled(cron = "*/2 * * * * ?")
-    public void insertUserAndRecord() {
-        autoService.autoInsertDocUser(autoService.getDocCount());
-        autoService.autoInsertPatUser(autoService.getPatCount());
-        autoService.autoInsertRecord(autoService.getPatCount() - 1);
-    }
+//    @Async
+//    @Scheduled(cron = "*/2 * * * * ?")
+//    public void insertUserAndRecord() {
+//        autoService.autoInsertDocUser(autoService.getDocCount());
+//        autoService.autoInsertPatUser(autoService.getPatCount());
+//        autoService.autoInsertRecord(autoService.getPatCount() - 1);
+//    }
     // 需要自动审核患者注册时使用，测试完审核页面后
 //    @Async
 //    @Scheduled(cron = "*/30 * * * * ?")

@@ -106,8 +106,8 @@ public class ManageServiceImpl implements ManageService {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
             List<AlertBaseInfo> baseList = alertRecordRepository.findAlertPageByViewerIDAndStatus(viewerID, Utils.ALERT_UNPROCESSED);
             HashMap<Long, AlertPagingDto> map = new HashMap<>();
-            for(AlertBaseInfo baseInfo:baseList){
-                if(map.containsKey(baseInfo.getPatientID())){
+            baseList.forEach(baseInfo -> {
+                if (map.containsKey(baseInfo.getPatientID())) {
                     AlertUnit newUnit = new AlertUnit();
                     BeanUtils.copyProperties(baseInfo, newUnit);
                     map.get(baseInfo.getPatientID()).getAlertUnitList().add(newUnit);
@@ -121,8 +121,8 @@ public class ManageServiceImpl implements ManageService {
                     newPat.setAlertUnitList(newList);
                     map.put(baseInfo.getPatientID(), newPat);
                 }
-            }
-            List<AlertPagingDto> pageList = new LinkedList<>(map.values());
+            });
+            List<AlertPagingDto> pageList = new ArrayList<>(map.values());
             Page<AlertPagingDto> page = new PageImpl<>(pageList, pageable, pageList.size());
             return new Result(page);
         } catch (NullPointerException e) {
@@ -382,7 +382,7 @@ public class ManageServiceImpl implements ManageService {
                     record.setStatus(Utils.REFERRAL_APPROVED);
                     record.setReviewDateTime(new Date());
                     Optional<ManagedPatientIndex> thisPatientOptional = managedPatientIndexRepository.findByPatientID(record.getPatientID());
-                    thisPatientOptional.ifPresent(thisPatient->{
+                    thisPatientOptional.ifPresent(thisPatient -> {
                         thisPatient.setManageStatus(record.getReferralType());
                         referralRecordRepository.save(record);
                         managedPatientIndexRepository.save(thisPatient);
@@ -460,8 +460,8 @@ public class ManageServiceImpl implements ManageService {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
             List<AlertBaseInfo> baseList = alertRecordRepository.findReferralAlertPageByViewerIDAndStatus(viewerID, Utils.ALERT_UNPROCESSED);
             HashMap<Long, AlertPagingDto> map = new HashMap<>();
-            for(AlertBaseInfo baseInfo:baseList){
-                if(map.containsKey(baseInfo.getPatientID())){
+            baseList.forEach(baseInfo -> {
+                if (map.containsKey(baseInfo.getPatientID())) {
                     AlertUnit newUnit = new AlertUnit();
                     BeanUtils.copyProperties(baseInfo, newUnit);
                     map.get(baseInfo.getPatientID()).getAlertUnitList().add(newUnit);
@@ -475,8 +475,8 @@ public class ManageServiceImpl implements ManageService {
                     newPat.setAlertUnitList(newList);
                     map.put(baseInfo.getPatientID(), newPat);
                 }
-            }
-            List<AlertPagingDto> pageList = new LinkedList<>(map.values());
+            });
+            List<AlertPagingDto> pageList = new ArrayList<>(map.values());
             Page<AlertPagingDto> page = new PageImpl<>(pageList, pageable, pageList.size());
             return new Result(page);
         } catch (NullPointerException e) {
