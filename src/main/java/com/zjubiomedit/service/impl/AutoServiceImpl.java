@@ -19,6 +19,7 @@ import com.zjubiomedit.util.enums.AlertEnum;
 import com.zjubiomedit.util.enums.ErrorEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -66,6 +67,12 @@ public class AutoServiceImpl implements AutoService {
     @Autowired
     ManageServiceImpl manageService;
 
+    @Value("${test.hospital.total}")
+    private Long hosTotal;
+    @Value("${test.doctor.total}")
+    private Long docTotal;
+    @Value("${test.patient.total}")
+    private Long patTotal;
 
     private void insertAlert(Long patientID, String alertCode, String alertType, String alertName, String alertMsg, String alertReason) {
         try {
@@ -309,7 +316,7 @@ public class AutoServiceImpl implements AutoService {
     @Override
     public void autoInsertDocUser(Long count) {
         DoctorUserAuths newDoc = new DoctorUserAuths();
-        if (count <= 6) {
+        if (count <= hosTotal) {
             log.info("autoInsertHosUser " + count.toString());
             OrgDict orgDict = new OrgDict();
             orgDict.setOrgCode("H" + count.toString());
@@ -326,12 +333,12 @@ public class AutoServiceImpl implements AutoService {
             newDoc.setOrgCode("H" + count.toString());
             newDoc.setPassword("1");
             doctorUserAuthsRepository.save(newDoc);
-        } else if (count <= 24) {
+        } else if (count <= hosTotal + docTotal) {
             log.info("autoInsertDocUser " + count.toString());
             newDoc.setUserName("doc" + count.toString());
             newDoc.setAuth(0);
             newDoc.setName("医生" + count.toString());
-            Long hosCodeNum = (count - 7) / 3 + 1;
+            Long hosCodeNum = (count - hosTotal - 1) / 3 + 1;
             newDoc.setOrgCode("H" + hosCodeNum.toString());
             newDoc.setPassword("1");
             doctorUserAuthsRepository.save(newDoc);
@@ -342,7 +349,7 @@ public class AutoServiceImpl implements AutoService {
 
     @Override
     public void autoInsertPatUser(Long count) {
-        if (count <= 54) {
+        if (count <= patTotal) {
             log.info("autoInsertPatUser " + count.toString());
             PatientUserAuths patientUserAuths = new PatientUserAuths();
             PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
@@ -365,7 +372,7 @@ public class AutoServiceImpl implements AutoService {
             }
             managementApplicationReview.setPatientID(count);
             managementApplicationReview.setHospitalID((count - 1) / 9 + 1);
-            managementApplicationReview.setDoctorID((count - 1) / 3 + 7);
+            managementApplicationReview.setDoctorID((count - 1) / 3 + 1 + hosTotal);
             patientUserAuthsRepository.save(patientUserAuths);
             patientUserBaseInfoRepository.save(patientUserBaseInfo);
             managementApplicationRepository.save(managementApplicationReview);
@@ -386,7 +393,7 @@ public class AutoServiceImpl implements AutoService {
 
     @Override
     public void autoInsertRecord(Long patientID) {
-        if (patientID < 54) { //ID:54患者无记录
+        if (patientID < patTotal) { //ID:54患者无记录
             log.info("autoInsertRecord " + patientID.toString());
             Calendar calendar = Calendar.getInstance();
             for (int index = 0; index < 3; index++) {

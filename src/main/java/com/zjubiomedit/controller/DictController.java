@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "字典管理")
 @RestController
 @RequestMapping("/dict")
+@CrossOrigin
 public class DictController {
     @Autowired
     DictServiceImpl dictService;

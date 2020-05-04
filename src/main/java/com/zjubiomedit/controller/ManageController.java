@@ -23,6 +23,7 @@ import java.util.Date;
 @Api(tags = "【医生】患者管理")
 @RestController
 @RequestMapping("/manage")
+@CrossOrigin
 public class ManageController {
 
     @Autowired

@@ -21,6 +21,7 @@ import java.util.Date;
 @Api(tags = "数据管理")
 @RestController
 @RequestMapping("/data")
+@CrossOrigin
 public class RecordController {
 
     @Autowired
