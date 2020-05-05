@@ -80,6 +80,7 @@ public class AuthServiceImpl implements AuthService {
                             doctorUserLoginDto.setAuth(user.getAuth());
                             doctorUserLoginDto.setOrgCode(user.getOrgCode());
                             doctorUserLoginDto.setStatus(user.getStatus());
+                            doctorUserLoginDto.setUserID(user.getUserID());
                             return new Result(doctorUserLoginDto);
                         }
                         else {

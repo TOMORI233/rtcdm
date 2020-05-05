@@ -13,4 +13,5 @@ public class DoctorUserLoginDto {
     private Integer auth;
     private String orgCode;
     private Integer status;
+    private Long userID;
 }

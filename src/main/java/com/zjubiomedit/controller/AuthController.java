@@ -24,8 +24,8 @@ public class AuthController {
 
     @ApiOperation(value = "医生用户登陆", httpMethod = "POST")
     @PostMapping(value = "/login")
-    public Result doctorUserLogin(@RequestParam(value = "userName") String userName,
-                                  @RequestParam(value = "password") String password){
+    public Result doctorUserLogin(@RequestParam(value = "userName", required = false) String userName,
+                                  @RequestParam(value = "password", required = false) String password){
 //        JsonObject jsonObject = JsonUtils.transformJson(loginUser);
 //        return authService.authLogin(jsonObject);
         return authService.authLogin(userName, password);

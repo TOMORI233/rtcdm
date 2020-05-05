@@ -56,6 +56,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result createDoctorUser(DoctorUserAuths doctorUserAuths) {
         try {
+            Optional<DoctorUserAuths> userAuthsOptional = doctorUserAuthsRepository.findByUserName(doctorUserAuths.getUserName());
+            if (userAuthsOptional.isPresent()) {
+                return new Result(ErrorEnum.E_10003);
+            }
             DoctorUserAuths newDoctor = doctorUserRepository.save(doctorUserAuths);
             return new Result(newDoctor);
         } catch (NullPointerException e) {
@@ -73,17 +77,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result getDoctorList(Long hospitalID){
+    public Result getDoctorList(Long hospitalID) {
         try {
             Optional<Integer> auth = doctorUserAuthsRepository.findAuthById(hospitalID);
-            if(auth.isPresent()){
-                if(auth.get().equals(Utils.PERSONAL)){
+            if (auth.isPresent()) {
+                if (auth.get().equals(Utils.PERSONAL)) {
                     return new Result(ErrorEnum.E_401);
                 }
                 List<DoctorListDto> doctorList = doctorUserAuthsRepository.findByHospitalId(hospitalID);
                 return new Result(doctorList);
-            }
-            else {
+            } else {
                 return new Result(ErrorEnum.E_400);
             }
         } catch (NullPointerException e) {

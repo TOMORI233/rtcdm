@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface DoctorUserAuthsRepository extends CrudRepository<DoctorUserAuths, Long> {
 
-    Optional<DoctorUserAuths> findByUserName(String username);
+    Optional<DoctorUserAuths> findByUserName(String userName);
 
     List<DoctorUserAuths> findByOrgCodeAndStatus(String orgCode, Integer status);
 
