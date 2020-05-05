@@ -124,6 +124,16 @@ public class ManageServiceImpl implements ManageService {
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
             List<AlertPagingDto> indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            indexPage.forEach(each -> {
+                each.setAlertCount(each.getAlertUnitList().size());
+                Date date = new Date();
+                if (each.getManageStartDateTime() != null) {
+                    each.setManageDays((date.getTime() - each.getManageStartDateTime().getTime()) / 86400000);
+                }
+                if (each.getLastFollowupDate() != null) {
+                    each.setLastFollowupDays((date.getTime() - each.getLastFollowupDate().getTime()) / 86400000);
+                }
+            });
             Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, indexPage.size());
             return new Result(page);
         } catch (NullPointerException e) {
@@ -425,30 +435,36 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Result recordPatientFollowup(FollowupRecordDto followupRecordDto) {
         try {
-            FollowupRecord newFollowupRecord = new FollowupRecord();
-            BeanUtils.copyProperties(followupRecordDto, newFollowupRecord);
-            FollowupRecord thisFollowup = followupRecordRepository.save(newFollowupRecord);
+            Optional<ManagedPatientIndex> indexOptional = managedPatientIndexRepository.findByPatientID(followupRecordDto.getPatientID());
             Result result = new Result(ErrorEnum.E_10008);
-            if (followupRecordDto.getAlertSerialNo() != null) {
-                Optional<AlertRecord> thisAlertOptional = alertRecordRepository.findBySerialNoAndStatus(followupRecordDto.getAlertSerialNo(), Utils.ALERT_UNPROCESSED);
-                thisAlertOptional.ifPresent(thisAlert -> {
-                    thisAlert.setExecuteDoctorID(followupRecordDto.getExecuteDoctorID());
-                    thisAlert.setFollowUpSerialNo(thisFollowup.getSerialNo());
-                    thisAlert.setStatus(Utils.ALERT_FOLLOWEDUP);
-                    alertRecordRepository.save(thisAlert);
-                    result.setCode(0);
-                    result.setMessage("success");
-                });
-            }
-            if (followupRecordDto.getPlanSerialNo() != null) {
-                Optional<FollowupPlan> thisPlanOptional = followupPlanRepository.findBySerialNoAndStatus(followupRecordDto.getPlanSerialNo(), Utils.FOLLOW_PLAN_TODO);
-                thisPlanOptional.ifPresent(thisPlan -> {
-                    thisPlan.setStatus(Utils.FOLLOW_PLAN_FINISHED);
-                    followupPlanRepository.save(thisPlan);
-                    result.setCode(0);
-                    result.setMessage("success");
-                });
-            }
+            indexOptional.ifPresent(patientIndex -> {
+                patientIndex.setFollowupTimes(patientIndex.getFollowupTimes() + 1);
+                patientIndex.setLastFollowupDate(new Date());
+                managedPatientIndexRepository.save(patientIndex);
+                FollowupRecord newFollowupRecord = new FollowupRecord();
+                BeanUtils.copyProperties(followupRecordDto, newFollowupRecord);
+                FollowupRecord thisFollowup = followupRecordRepository.save(newFollowupRecord);
+                if (followupRecordDto.getAlertSerialNo() != null) {
+                    Optional<AlertRecord> thisAlertOptional = alertRecordRepository.findBySerialNoAndStatus(followupRecordDto.getAlertSerialNo(), Utils.ALERT_UNPROCESSED);
+                    thisAlertOptional.ifPresent(thisAlert -> {
+                        thisAlert.setExecuteDoctorID(followupRecordDto.getExecuteDoctorID());
+                        thisAlert.setFollowUpSerialNo(thisFollowup.getSerialNo());
+                        thisAlert.setStatus(Utils.ALERT_FOLLOWEDUP);
+                        alertRecordRepository.save(thisAlert);
+                        result.setCode(0);
+                        result.setMessage("success");
+                    });
+                }
+                if (followupRecordDto.getPlanSerialNo() != null) {
+                    Optional<FollowupPlan> thisPlanOptional = followupPlanRepository.findBySerialNoAndStatus(followupRecordDto.getPlanSerialNo(), Utils.FOLLOW_PLAN_TODO);
+                    thisPlanOptional.ifPresent(thisPlan -> {
+                        thisPlan.setStatus(Utils.FOLLOW_PLAN_FINISHED);
+                        followupPlanRepository.save(thisPlan);
+                        result.setCode(0);
+                        result.setMessage("success");
+                    });
+                }
+            });
             return result;
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
@@ -479,6 +495,16 @@ public class ManageServiceImpl implements ManageService {
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
             List<AlertPagingDto> indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            indexPage.forEach(each -> {
+                each.setAlertCount(each.getAlertUnitList().size());
+                Date date = new Date();
+                if (each.getManageStartDateTime() != null) {
+                    each.setManageDays((date.getTime() - each.getManageStartDateTime().getTime()) / 86400000);
+                }
+                if (each.getLastFollowupDate() != null) {
+                    each.setLastFollowupDays((date.getTime() - each.getLastFollowupDate().getTime()) / 86400000);
+                }
+            });
             Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, indexPage.size());
             return new Result(page);
         } catch (NullPointerException e) {

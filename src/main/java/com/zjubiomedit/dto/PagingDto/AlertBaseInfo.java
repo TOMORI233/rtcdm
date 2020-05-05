@@ -27,7 +27,11 @@ public class AlertBaseInfo {
     private Date dateOfBirth;
     // ManagedPatientIndex
     private Integer manageStatus;
+    private Date manageStartDateTime;
+    private Integer manageClass;
     private Integer complianceRate;
+    private Integer followupTimes;
+    private Date lastFollowupDate;
     // DoctorUserAuths
     private String doctorName; // name
     private String orgCode;

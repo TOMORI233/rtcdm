@@ -21,7 +21,7 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertBaseInfo" +
             "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followUpSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
-            "mpi.manageStatus, mpi.complianceRate, " +
+            "mpi.manageStatus, mpi.manageStartDateTime, mpi.manageClass, mpi.complianceRate, mpi.followupTimes, mpi.lastFollowupDate, " +
             "dua.name, dua.orgCode, " +
             "od.orgName, " +
             "cmd.manageLevel) " +
@@ -52,7 +52,7 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertBaseInfo" +
             "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followUpSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
-            "mpi.manageStatus, mpi.complianceRate, " +
+            "mpi.manageStatus, mpi.manageStartDateTime, mpi.manageClass, mpi.complianceRate, mpi.followupTimes, mpi.lastFollowupDate, " +
             "dua.name, dua.orgCode, " +
             "od.orgName, " +
             "cmd.manageLevel) " +
