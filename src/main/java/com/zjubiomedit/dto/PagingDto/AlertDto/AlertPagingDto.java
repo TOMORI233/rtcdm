@@ -1,6 +1,7 @@
-package com.zjubiomedit.dto.PagingDto;
+package com.zjubiomedit.dto.PagingDto.AlertDto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zjubiomedit.entity.Record.DrugRecord;
 import lombok.Data;
 
 import java.util.Date;
@@ -21,7 +22,7 @@ public class AlertPagingDto {
 //    private String ignoreReason;
 //    private Long executeDoctorID;
 //    private Date executeTime;
-    private List<AlertUnit> alertUnitList;
+    private List<AlertItem> alertItemList;
     private Integer alertCount;
     // PatientUserBaseInfo
     private String patientName; // name
@@ -45,4 +46,6 @@ public class AlertPagingDto {
     private String orgName;
     // COPDManageDetail
     private Integer manageLevel;
+    // DrugRecord
+    private List<DrugRecord> drugRecordList;
 }

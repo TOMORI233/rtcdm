@@ -1,6 +1,6 @@
 package com.zjubiomedit.dao.Platform;
 
-import com.zjubiomedit.dto.PagingDto.AlertBaseInfo;
+import com.zjubiomedit.dto.PagingDto.AlertDto.AlertBaseInfo;
 import com.zjubiomedit.entity.Platform.AlertRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> {
 
-    @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertBaseInfo" +
+    @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertDto.AlertBaseInfo" +
             "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followUpSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
             "mpi.manageStatus, mpi.manageStartDateTime, mpi.manageClass, mpi.complianceRate, mpi.followupTimes, mpi.lastFollowupDate, " +
@@ -49,7 +49,7 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
 
     Page<AlertRecord> findByPatientID(Long patientID, Pageable pageable);
 
-    @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertBaseInfo" +
+    @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertDto.AlertBaseInfo" +
             "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followUpSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
             "mpi.manageStatus, mpi.manageStartDateTime, mpi.manageClass, mpi.complianceRate, mpi.followupTimes, mpi.lastFollowupDate, " +

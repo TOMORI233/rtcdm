@@ -6,6 +6,9 @@ import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dto.DoctorEndDto.*;
 import com.zjubiomedit.dto.PagingDto.*;
+import com.zjubiomedit.dto.PagingDto.AlertDto.AlertBaseInfo;
+import com.zjubiomedit.dto.PagingDto.AlertDto.AlertPagingDto;
+import com.zjubiomedit.dto.PagingDto.AlertDto.AlertItem;
 import com.zjubiomedit.entity.Platform.*;
 import com.zjubiomedit.entity.User.PatientUserAuths;
 import com.zjubiomedit.service.ManageService;
@@ -108,24 +111,24 @@ public class ManageServiceImpl implements ManageService {
             HashMap<Long, AlertPagingDto> map = new HashMap<>();
             baseList.forEach(baseInfo -> {
                 if (map.containsKey(baseInfo.getPatientID())) {
-                    AlertUnit newUnit = new AlertUnit();
+                    AlertItem newUnit = new AlertItem();
                     BeanUtils.copyProperties(baseInfo, newUnit);
-                    map.get(baseInfo.getPatientID()).getAlertUnitList().add(newUnit);
+                    map.get(baseInfo.getPatientID()).getAlertItemList().add(newUnit);
                 } else {
                     AlertPagingDto newPat = new AlertPagingDto();
                     BeanUtils.copyProperties(baseInfo, newPat);
-                    AlertUnit newUnit = new AlertUnit();
+                    AlertItem newUnit = new AlertItem();
                     BeanUtils.copyProperties(baseInfo, newUnit);
-                    List<AlertUnit> newList = new LinkedList<>();
+                    List<AlertItem> newList = new LinkedList<>();
                     newList.add(newUnit);
-                    newPat.setAlertUnitList(newList);
+                    newPat.setAlertItemList(newList);
                     map.put(baseInfo.getPatientID(), newPat);
                 }
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
             List<AlertPagingDto> indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
             indexPage.forEach(each -> {
-                each.setAlertCount(each.getAlertUnitList().size());
+                each.setAlertCount(each.getAlertItemList().size());
                 Date date = new Date();
                 if (each.getManageStartDateTime() != null) {
                     each.setManageDays((date.getTime() - each.getManageStartDateTime().getTime()) / 86400000);
@@ -479,24 +482,24 @@ public class ManageServiceImpl implements ManageService {
             HashMap<Long, AlertPagingDto> map = new HashMap<>();
             baseList.forEach(baseInfo -> {
                 if (map.containsKey(baseInfo.getPatientID())) {
-                    AlertUnit newUnit = new AlertUnit();
+                    AlertItem newUnit = new AlertItem();
                     BeanUtils.copyProperties(baseInfo, newUnit);
-                    map.get(baseInfo.getPatientID()).getAlertUnitList().add(newUnit);
+                    map.get(baseInfo.getPatientID()).getAlertItemList().add(newUnit);
                 } else {
                     AlertPagingDto newPat = new AlertPagingDto();
                     BeanUtils.copyProperties(baseInfo, newPat);
-                    AlertUnit newUnit = new AlertUnit();
+                    AlertItem newUnit = new AlertItem();
                     BeanUtils.copyProperties(baseInfo, newUnit);
-                    List<AlertUnit> newList = new LinkedList<>();
+                    List<AlertItem> newList = new LinkedList<>();
                     newList.add(newUnit);
-                    newPat.setAlertUnitList(newList);
+                    newPat.setAlertItemList(newList);
                     map.put(baseInfo.getPatientID(), newPat);
                 }
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
             List<AlertPagingDto> indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
             indexPage.forEach(each -> {
-                each.setAlertCount(each.getAlertUnitList().size());
+                each.setAlertCount(each.getAlertItemList().size());
                 Date date = new Date();
                 if (each.getManageStartDateTime() != null) {
                     each.setManageDays((date.getTime() - each.getManageStartDateTime().getTime()) / 86400000);

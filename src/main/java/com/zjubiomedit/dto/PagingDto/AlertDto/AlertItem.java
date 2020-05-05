@@ -1,4 +1,4 @@
-package com.zjubiomedit.dto.PagingDto;
+package com.zjubiomedit.dto.PagingDto.AlertDto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class AlertUnit {
+public class AlertItem {
     private Long serialNo;
     private String alertType;
     private String alertName;

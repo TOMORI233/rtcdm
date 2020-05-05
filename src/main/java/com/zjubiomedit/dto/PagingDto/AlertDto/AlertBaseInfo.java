@@ -1,4 +1,4 @@
-package com.zjubiomedit.dto.PagingDto;
+package com.zjubiomedit.dto.PagingDto.AlertDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,4 +39,7 @@ public class AlertBaseInfo {
     private String orgName;
     // COPDManageDetail
     private Integer manageLevel;
+    // DrugRecord
+//    private String drugName;
+//    private String dosage;
 }
