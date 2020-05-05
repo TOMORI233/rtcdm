@@ -1,5 +1,6 @@
 package com.zjubiomedit.dto.PagingDto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -16,7 +17,9 @@ public class ManageIndexPagingDto {
     private Long patientID;
     private Integer manageStatus;
     private Integer complianceRate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date manageStartDateTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date terminationDateTime;
     // DoctorUserAuths
     private String doctorName; // name
