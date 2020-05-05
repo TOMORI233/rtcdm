@@ -123,7 +123,8 @@ public class ManageServiceImpl implements ManageService {
                 }
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
-            Page<AlertPagingDto> page = new PageImpl<>(pageList, pageable, pageList.size());
+            List<AlertPagingDto> indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, indexPage.size());
             return new Result(page);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
@@ -477,7 +478,8 @@ public class ManageServiceImpl implements ManageService {
                 }
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
-            Page<AlertPagingDto> page = new PageImpl<>(pageList, pageable, pageList.size());
+            List<AlertPagingDto> indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, indexPage.size());
             return new Result(page);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
