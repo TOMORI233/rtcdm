@@ -9,6 +9,7 @@ import com.zjubiomedit.dto.PagingDto.*;
 import com.zjubiomedit.dto.PagingDto.AlertDto.AlertBaseInfo;
 import com.zjubiomedit.dto.PagingDto.AlertDto.AlertPagingDto;
 import com.zjubiomedit.dto.PagingDto.AlertDto.AlertItem;
+import com.zjubiomedit.dto.PagingDto.AlertDto.ManageItem;
 import com.zjubiomedit.entity.Platform.*;
 import com.zjubiomedit.entity.User.PatientUserAuths;
 import com.zjubiomedit.service.ManageService;
@@ -111,16 +112,19 @@ public class ManageServiceImpl implements ManageService {
             HashMap<Long, AlertPagingDto> map = new HashMap<>();
             baseList.forEach(baseInfo -> {
                 if (map.containsKey(baseInfo.getPatientID())) {
-                    AlertItem newUnit = new AlertItem();
-                    BeanUtils.copyProperties(baseInfo, newUnit);
-                    map.get(baseInfo.getPatientID()).getAlertItemList().add(newUnit);
+                    AlertItem newItem = new AlertItem();
+                    BeanUtils.copyProperties(baseInfo, newItem);
+                    map.get(baseInfo.getPatientID()).getAlertItemList().add(newItem);
                 } else {
                     AlertPagingDto newPat = new AlertPagingDto();
+                    ManageItem manageItem = new ManageItem();
                     BeanUtils.copyProperties(baseInfo, newPat);
-                    AlertItem newUnit = new AlertItem();
-                    BeanUtils.copyProperties(baseInfo, newUnit);
+                    BeanUtils.copyProperties(baseInfo, manageItem);
+                    newPat.setManageItem(manageItem);
+                    AlertItem newItem = new AlertItem();
+                    BeanUtils.copyProperties(baseInfo, newItem);
                     List<AlertItem> newList = new LinkedList<>();
-                    newList.add(newUnit);
+                    newList.add(newItem);
                     newPat.setAlertItemList(newList);
                     map.put(baseInfo.getPatientID(), newPat);
                 }
@@ -130,11 +134,11 @@ public class ManageServiceImpl implements ManageService {
             indexPage.forEach(each -> {
                 each.setAlertCount(each.getAlertItemList().size());
                 Date date = new Date();
-                if (each.getManageStartDateTime() != null) {
-                    each.setManageDays((date.getTime() - each.getManageStartDateTime().getTime()) / 86400000);
+                if (each.getManageItem().getManageStartDateTime() != null) {
+                    each.getManageItem().setManageDays((date.getTime() - each.getManageItem().getManageStartDateTime().getTime()) / 86400000);
                 }
-                if (each.getLastFollowupDate() != null) {
-                    each.setLastFollowupDays((date.getTime() - each.getLastFollowupDate().getTime()) / 86400000);
+                if (each.getManageItem().getLastFollowupDate() != null) {
+                    each.getManageItem().setLastFollowupDays((date.getTime() - each.getManageItem().getLastFollowupDate().getTime()) / 86400000);
                 }
             });
             Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, indexPage.size());
@@ -482,16 +486,19 @@ public class ManageServiceImpl implements ManageService {
             HashMap<Long, AlertPagingDto> map = new HashMap<>();
             baseList.forEach(baseInfo -> {
                 if (map.containsKey(baseInfo.getPatientID())) {
-                    AlertItem newUnit = new AlertItem();
-                    BeanUtils.copyProperties(baseInfo, newUnit);
-                    map.get(baseInfo.getPatientID()).getAlertItemList().add(newUnit);
+                    AlertItem newItem = new AlertItem();
+                    BeanUtils.copyProperties(baseInfo, newItem);
+                    map.get(baseInfo.getPatientID()).getAlertItemList().add(newItem);
                 } else {
                     AlertPagingDto newPat = new AlertPagingDto();
+                    ManageItem manageItem = new ManageItem();
                     BeanUtils.copyProperties(baseInfo, newPat);
-                    AlertItem newUnit = new AlertItem();
-                    BeanUtils.copyProperties(baseInfo, newUnit);
+                    BeanUtils.copyProperties(baseInfo, manageItem);
+                    newPat.setManageItem(manageItem);
+                    AlertItem newItem = new AlertItem();
+                    BeanUtils.copyProperties(baseInfo, newItem);
                     List<AlertItem> newList = new LinkedList<>();
-                    newList.add(newUnit);
+                    newList.add(newItem);
                     newPat.setAlertItemList(newList);
                     map.put(baseInfo.getPatientID(), newPat);
                 }
@@ -501,11 +508,11 @@ public class ManageServiceImpl implements ManageService {
             indexPage.forEach(each -> {
                 each.setAlertCount(each.getAlertItemList().size());
                 Date date = new Date();
-                if (each.getManageStartDateTime() != null) {
-                    each.setManageDays((date.getTime() - each.getManageStartDateTime().getTime()) / 86400000);
+                if (each.getManageItem().getManageStartDateTime() != null) {
+                    each.getManageItem().setManageDays((date.getTime() - each.getManageItem().getManageStartDateTime().getTime()) / 86400000);
                 }
-                if (each.getLastFollowupDate() != null) {
-                    each.setLastFollowupDays((date.getTime() - each.getLastFollowupDate().getTime()) / 86400000);
+                if (each.getManageItem().getLastFollowupDate() != null) {
+                    each.getManageItem().setLastFollowupDays((date.getTime() - each.getManageItem().getLastFollowupDate().getTime()) / 86400000);
                 }
             });
             Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, indexPage.size());

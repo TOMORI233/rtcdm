@@ -1,6 +1,5 @@
 package com.zjubiomedit.dto.PagingDto.AlertDto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zjubiomedit.entity.Record.DrugRecord;
 import lombok.Data;
 
@@ -11,7 +10,7 @@ import java.util.List;
 public class AlertPagingDto {
     // AlertRecord
     private Long patientID;
-    //    private Long serialNo;
+//    private Long serialNo;
 //    private String alertType;
 //    private String alertName;
 //    private String alertReason;
@@ -28,24 +27,26 @@ public class AlertPagingDto {
     private String patientName; // name
     private Integer sex;
     private Date dateOfBirth;
-    // ManagedPatientIndex
-    private Integer manageStatus;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date manageStartDateTime;
-    private Long manageDays;
-    private Integer manageClass;
-    private Integer complianceRate;
-    private Integer followupTimes;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date lastFollowupDate;
-    private Long lastFollowupDays;
+    // manage
+//    // ManagedPatientIndex
+//    private Integer manageStatus;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+//    private Date manageStartDateTime;
+//    private Long manageDays;
+//    private Integer manageClass;
+//    private Integer complianceRate;
+//    private Integer followupTimes;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+//    private Date lastFollowupDate;
+//    private Long lastFollowupDays;
+//    // COPDManageDetail
+//    private Integer manageLevel;
+    private ManageItem manageItem;
     // DoctorUserAuths
     private String doctorName; // name
     private String orgCode;
     // OrgDict
     private String orgName;
-    // COPDManageDetail
-    private Integer manageLevel;
     // DrugRecord
     private List<DrugRecord> drugRecordList;
 }
