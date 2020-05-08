@@ -8,6 +8,7 @@ import com.zjubiomedit.service.AuthService;
 import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
 import com.zjubiomedit.util.enums.ErrorEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,8 @@ import java.util.Optional;
  * @version 1.0
  * @date 2019-11-04
  */
+
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 

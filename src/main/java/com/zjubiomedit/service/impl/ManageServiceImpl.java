@@ -130,7 +130,10 @@ public class ManageServiceImpl implements ManageService {
                 }
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
-            List<AlertPagingDto> indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            List<AlertPagingDto> indexPage = pageList;
+            if (pageList.size() > pageIndex * pageOffset) {
+                indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            }
             indexPage.forEach(each -> {
                 each.setAlertCount(each.getAlertItemList().size());
                 Date date = new Date();
@@ -504,7 +507,10 @@ public class ManageServiceImpl implements ManageService {
                 }
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
-            List<AlertPagingDto> indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            List<AlertPagingDto> indexPage = pageList;
+            if (pageList.size() > pageIndex * pageOffset) {
+                indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            }
             indexPage.forEach(each -> {
                 each.setAlertCount(each.getAlertItemList().size());
                 Date date = new Date();
