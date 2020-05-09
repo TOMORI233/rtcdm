@@ -21,7 +21,7 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
             "where fp.patientID in " +
             "(select mpi.patientID from ManagedPatientIndex mpi " +
             "where mpi.manageStatus <> 9 and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID)) " +
-            "and fp.planDate > :startDate " +
+            "and fp.planDate >= :startDate " +
             "and fp.planDate < :endDate " +
             "and fp.status = :status")
     Long CountByViewerIDAndStatusAndDate(Long viewerID, Integer status, Date startDate, Date endDate);
@@ -29,7 +29,7 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
     Optional<FollowupPlan> findBySerialNoAndStatus(Long serialNo, Integer status);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.FollowupPagingDto" +
-            "(fp.serialNo, fp.patientID, fp.planDate, fp.status, fp.followUpType, fp.memo, " +
+            "(fp.serialNo, fp.patientID, fp.planDate, fp.status, fp.followupType, fp.memo, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
             "mpi.followupTimes, mpi.lastFollowupDate, mpi.manageStatus, mpi.complianceRate, " +
             "dua.name, dua.orgCode, " +
@@ -40,7 +40,7 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
             "(select mpi.patientID from ManagedPatientIndex mpi " +
             "where mpi.manageStatus <> 9 and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID)) " +
             "and fp.status = :status " +
-            "and fp.planDate > :startDate and fp.planDate < :endDate " +
+            "and fp.planDate >= :startDate and fp.planDate < :endDate " +
             "and pub.userID = fp.patientID " +
             "and mpi.patientID = fp.patientID " +
             "and dua.userID = mpi.doctorID " +
@@ -54,13 +54,13 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
             "where doctorID = :viewerID or orgCode in" +
             "(select orgCode from DoctorUserAuths " +
             "where userID = :viewerID and auth = 1)) " +
-            "and fp.planDate > :startDate " +
+            "and fp.planDate >= :startDate " +
             "and fp.planDate < :endDate " +
             "and fp.status = :status")
     Long CountReferralByViewerIDAndStatusAndDate(Long viewerID, Integer status, Date startDate, Date endDate);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.FollowupPagingDto" +
-            "(fp.serialNo, fp.patientID, fp.planDate, fp.status, fp.followUpType, fp.memo, " +
+            "(fp.serialNo, fp.patientID, fp.planDate, fp.status, fp.followupType, fp.memo, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
             "mpi.followupTimes, mpi.lastFollowupDate, mpi.manageStatus, mpi.complianceRate, " +
             "dua.name, dua.orgCode, " +
@@ -73,7 +73,7 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
             "(select orgCode from DoctorUserAuths " +
             "where userID = :viewerID and auth = 1)) " +
             "and fp.status = :status " +
-            "and fp.planDate > :startDate and fp.planDate < :endDate " +
+            "and fp.planDate >= :startDate and fp.planDate < :endDate " +
             "and pub.userID = fp.patientID " +
             "and mpi.patientID = fp.patientID " +
             "and dua.userID = mpi.doctorID " +

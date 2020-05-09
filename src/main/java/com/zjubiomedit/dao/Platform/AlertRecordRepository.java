@@ -34,7 +34,8 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
             "and mpi.patientID = ar.patientID " +
             "and dua.userID = mpi.doctorID " +
             "and dua.orgCode = od.orgCode " +
-            "and cmd.patientID = ar.patientID")
+            "and cmd.patientID = ar.patientID " +
+            "order by ar.alertTime desc")
     List<AlertBaseInfo> findAlertPageByViewerIDAndStatus(@Param("viewerID") Long viewerID, @Param("status") Integer status);
 
     @Query(value = "select count(distinct ar.patientID) " +
@@ -68,7 +69,8 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
             "and mpi.patientID = ar.patientID " +
             "and dua.userID = mpi.doctorID " +
             "and dua.orgCode = od.orgCode " +
-            "and cmd.patientID = ar.patientID")
+            "and cmd.patientID = ar.patientID " +
+            "order by ar.alertTime desc")
     List<AlertBaseInfo> findReferralAlertPageByViewerIDAndStatus(Long viewerID, Integer status);
 
     @Query(value = "select count(distinct ar.patientID) " +

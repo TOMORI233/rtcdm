@@ -15,7 +15,7 @@ public class FollowupPagingDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date planDate;
     private Integer status;
-    private String followUpType;
+    private String followupType;
     private String memo;
     // PatientUserBaseInfo
     private String patientName; // name

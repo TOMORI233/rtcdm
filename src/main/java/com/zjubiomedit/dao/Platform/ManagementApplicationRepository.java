@@ -21,7 +21,7 @@ public interface ManagementApplicationRepository extends JpaRepository<Managemen
 
     @Query(value = "select " +
             "new com.zjubiomedit.dto.PagingDto.RegisterPagingDto" +
-            "(pub.name, pub.sex, pub.dateOfBirth, pub.profession, pub.education, pub.height, pub.weight, pua.registerDateTime, mar.serialNo, mar.doctorID, mar.diagnosis) " +
+            "(pub.name, pub.sex, pub.dateOfBirth, pub.profession, pub.education, pub.height, pub.weight, pub.phone, pua.registerDateTime, mar.serialNo, mar.doctorID, mar.diagnosis) " +
             "from PatientUserBaseInfo pub, PatientUserAuths pua, ManagementApplicationReview mar " +
             "where (mar.doctorID = :viewerID or mar.hospitalID = :viewerID) " +
             "and mar.status = 0 " +

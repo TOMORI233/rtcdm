@@ -51,8 +51,7 @@ public class ManageServiceImpl implements ManageService {
     public Result pagingPatientRegister(Long viewerID, Integer pageIndex, Integer pageOffset) {
         try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
-            Page<RegisterPagingDto> page;
-            page = managementApplicationRepository.findByViewerID(viewerID, pageable);
+            Page<RegisterPagingDto> page = managementApplicationRepository.findByViewerID(viewerID, pageable);
             return new Result(page);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
@@ -62,6 +61,9 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Result reviewRegister(Long serialNo, Integer status, Long doctorID, Long reviewerID, String refuseReason) {
         //审核
+        if (status == Utils.REVIEW_APPROVED && doctorID == null) {
+            return new Result(ErrorEnum.E_501);
+        }
         try {
             Optional<ManagementApplicationReview> registerReview = managementApplicationRepository.findBySerialNo(serialNo);
             if (registerReview.isPresent()) {
@@ -130,13 +132,18 @@ public class ManageServiceImpl implements ManageService {
                 }
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
-            List<AlertPagingDto> indexPage = pageList;
-            if (pageList.size() > pageIndex * pageOffset) {
-                indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            int fromIndex = pageOffset * (pageIndex - 1);
+            int toIndex = pageList.size();
+            if (fromIndex > pageList.size() - 1) { // 页面范围超出数据范围
+                return new Result(ErrorEnum.E_501);
+            } else if (toIndex >= pageOffset * pageIndex) { // fromIndex包括, toIndex不包括
+                toIndex = pageOffset * pageIndex;
             }
+            List<AlertPagingDto> indexPage = pageList.subList(fromIndex, toIndex);
             indexPage.forEach(each -> {
                 each.setAlertCount(each.getAlertItemList().size());
                 Date date = new Date();
+                // 根据时间计算距今天数
                 if (each.getManageItem().getManageStartDateTime() != null) {
                     each.getManageItem().setManageDays((date.getTime() - each.getManageItem().getManageStartDateTime().getTime()) / 86400000);
                 }
@@ -144,7 +151,7 @@ public class ManageServiceImpl implements ManageService {
                     each.getManageItem().setLastFollowupDays((date.getTime() - each.getManageItem().getLastFollowupDate().getTime()) / 86400000);
                 }
             });
-            Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, indexPage.size());
+            Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, pageList.size());
             return new Result(page);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
@@ -365,7 +372,7 @@ public class ManageServiceImpl implements ManageService {
             FollowupPlan thisPlan = new FollowupPlan();
             thisPlan.setPatientID(followupPlanCreateDto.getPatientID());
             thisPlan.setPlanDate(followupPlanCreateDto.getPlanDate());
-            thisPlan.setFollowUpType(followupPlanCreateDto.getFollowUpType());
+            thisPlan.setFollowupType(followupPlanCreateDto.getFollowUpType());
             thisPlan.setMemo(followupPlanCreateDto.getMemo());
             thisPlan.setStatus(Utils.FOLLOW_PLAN_TODO);
             followupPlanRepository.save(thisPlan);
@@ -507,10 +514,14 @@ public class ManageServiceImpl implements ManageService {
                 }
             });
             List<AlertPagingDto> pageList = new ArrayList<>(map.values());
-            List<AlertPagingDto> indexPage = pageList;
-            if (pageList.size() > pageIndex * pageOffset) {
-                indexPage = pageList.subList(pageOffset * (pageIndex - 1), pageOffset * pageIndex);
+            int fromIndex = pageOffset * (pageIndex - 1);
+            int toIndex = pageList.size();
+            if (fromIndex > pageList.size() - 1) { // 页面范围超出数据范围
+                return new Result(ErrorEnum.E_501);
+            } else if (toIndex >= pageOffset * pageIndex) { // fromIndex包括, toIndex不包括
+                toIndex = pageOffset * pageIndex;
             }
+            List<AlertPagingDto> indexPage = pageList.subList(fromIndex, toIndex);
             indexPage.forEach(each -> {
                 each.setAlertCount(each.getAlertItemList().size());
                 Date date = new Date();
@@ -521,7 +532,7 @@ public class ManageServiceImpl implements ManageService {
                     each.getManageItem().setLastFollowupDays((date.getTime() - each.getManageItem().getLastFollowupDate().getTime()) / 86400000);
                 }
             });
-            Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, indexPage.size());
+            Page<AlertPagingDto> page = new PageImpl<>(indexPage, pageable, pageList.size());
             return new Result(page);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);

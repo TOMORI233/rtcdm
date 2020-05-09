@@ -44,13 +44,12 @@ public class ManageController {
 
     @ApiOperation(value = "【医生/医院】审核（通过/拒绝）患者", response = Result.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "doctorID", dataType = "Long", value = "接收患者医生ID", required = true, example = "1"),
             @ApiImplicitParam(name = "status", dataType = "int", value = "1-审核通过，2-审核不通过，3-忽略", required = true, defaultValue = "1", example = "1")
     })
     @PostMapping(value = "/register/audit")
     public Result patientRegisterAudit(@RequestParam(value = "serialNo") Long serialNo,
                                        Integer status,
-                                       Long doctorID,
+                                       @RequestParam(value = "doctorID", required = false) Long doctorID,
                                        @RequestParam(value = "reviewerID") Long reviewerID,
                                        @RequestParam(value = "refuseReason", required = false) String refuseReason) {
         return manageService.reviewRegister(serialNo, status, doctorID, reviewerID, refuseReason);
