@@ -14,9 +14,6 @@ import java.util.Date;
 public class FollowupPlan extends PlatformBaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date planDate;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date latestDate;
-    private Integer cumulativeCount;
     @Column(nullable = false, length = 100)
     private String followupType;
     @Column(nullable = false)
@@ -26,8 +23,4 @@ public class FollowupPlan extends PlatformBaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
     private Date updateTime;
-
-    public void increaseCount(){
-        ++this.cumulativeCount;
-    }
 }
