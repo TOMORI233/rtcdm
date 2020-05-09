@@ -372,7 +372,7 @@ public class ManageServiceImpl implements ManageService {
             FollowupPlan thisPlan = new FollowupPlan();
             thisPlan.setPatientID(followupPlanCreateDto.getPatientID());
             thisPlan.setPlanDate(followupPlanCreateDto.getPlanDate());
-            thisPlan.setFollowupType(followupPlanCreateDto.getFollowUpType());
+            thisPlan.setFollowupType(followupPlanCreateDto.getFollowupType());
             thisPlan.setMemo(followupPlanCreateDto.getMemo());
             thisPlan.setStatus(Utils.FOLLOW_PLAN_TODO);
             followupPlanRepository.save(thisPlan);
