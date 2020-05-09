@@ -66,29 +66,36 @@ public class UserController {
 
     @ApiOperation(value = "获取患者管理计划历史列表", response = Result.class)
     @GetMapping(value = "/patient/history/plan")
-    public Result patientManagePlanDetail(@RequestParam(value = "patientID") Long patientID){
+    public Result patientManagePlanHistory(@RequestParam(value = "patientID") Long patientID){
         //管理计划
-        return userService.getPatientManagePlanDetail(patientID);
+        return userService.getPatientManagePlanHistory(patientID);
     }
 
     @ApiOperation(value = "获取患者预警历史(分页)", response = Result.class)
     @GetMapping(value = "/patient/history/alert/page")
-    public Result patientAlertDetail(@RequestParam(value = "patientID") Long patientID,
+    public Result patientAlertHistory(@RequestParam(value = "patientID") Long patientID,
                                      @RequestParam(value = "pageIndex") Integer pageIndex,
                                      @RequestParam(value = "pageOffset") Integer pageOffset){
         //预警历史
-        return userService.getPatientAlertDetail(patientID, pageIndex, pageOffset);
+        return userService.getPatientAlertHistory(patientID, pageIndex, pageOffset);
     }
 
     @ApiOperation(value = "获取患者随访历史记录(分页)", response = Result.class)
     @GetMapping(value = "/patient/history/followup/page")
-    public Result patientFollowupDetail(@RequestParam(value = "patientID") Long patientID,
+    public Result patientFollowupHistory(@RequestParam(value = "patientID") Long patientID,
                                      @RequestParam(value = "pageIndex") Integer pageIndex,
                                      @RequestParam(value = "pageOffset") Integer pageOffset){
-        //预警历史
-        return userService.getPatientFollowupDetail(patientID, pageIndex, pageOffset);
+        //随访历史
+        return userService.getPatientFollowupHistory(patientID, pageIndex, pageOffset);
     }
 
-
+    @ApiOperation(value = "获取患者转诊历史记录(分页)", response = Result.class)
+    @GetMapping(value = "/patient/history/referral/page")
+    public Result patientReferralHistory(@RequestParam(value = "patientID") Long patientID,
+                                        @RequestParam(value = "pageIndex") Integer pageIndex,
+                                        @RequestParam(value = "pageOffset") Integer pageOffset){
+        //转诊历史
+        return userService.getPatientReferralHistory(patientID, pageIndex, pageOffset);
+    }
 
 }

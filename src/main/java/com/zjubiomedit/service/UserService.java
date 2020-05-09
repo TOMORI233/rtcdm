@@ -35,9 +35,11 @@ public interface UserService {
 
     Result getDoctorNameByDoctorID(Long doctorID);
 
-    Result getPatientManagePlanDetail(Long patientID);
+    Result getPatientManagePlanHistory(Long patientID);
 
-    Result getPatientAlertDetail(Long patientID, Integer pageIndex, Integer pageOffset);
+    Result getPatientAlertHistory(Long patientID, Integer pageIndex, Integer pageOffset);
 
-    Result getPatientFollowupDetail(Long patientID, Integer pageIndex, Integer pageOffset);
+    Result getPatientFollowupHistory(Long patientID, Integer pageIndex, Integer pageOffset);
+
+    Result getPatientReferralHistory(Long patientID, Integer pageIndex, Integer pageOffset);
 }

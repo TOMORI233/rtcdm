@@ -10,6 +10,7 @@ import com.zjubiomedit.dto.DoctorEndDto.DoctorListDto;
 import com.zjubiomedit.entity.Platform.AlertRecord;
 import com.zjubiomedit.entity.Platform.FollowupRecord;
 import com.zjubiomedit.entity.Platform.ManagedPatientIndex;
+import com.zjubiomedit.entity.Platform.ReferralRecord;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
 import com.zjubiomedit.entity.User.PatientUserBaseInfo;
@@ -122,7 +123,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result getPatientManagePlanDetail(Long patientID) {
+    public Result getPatientManagePlanHistory(Long patientID) {
         try {
             return new Result(managementPlanRepository.findByPatientID(patientID));
         } catch (NullPointerException e) {
@@ -131,7 +132,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result getPatientAlertDetail(Long patientID, Integer pageIndex, Integer pageOffset) {
+    public Result getPatientAlertHistory(Long patientID, Integer pageIndex, Integer pageOffset) {
         try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
             Page<AlertRecord> page = alertRecordRepository.findByPatientID(patientID, pageable);
@@ -142,10 +143,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Result getPatientFollowupDetail(Long patientID, Integer pageIndex, Integer pageOffset) {
+    public Result getPatientFollowupHistory(Long patientID, Integer pageIndex, Integer pageOffset) {
         try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
             Page<FollowupRecord> page = followupRecordRepository.findByPatientID(patientID, pageable);
+            return new Result(page);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
+    }
+
+    @Override
+    public Result getPatientReferralHistory(Long patientID, Integer pageIndex, Integer pageOffset) {
+        try {
+            Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
+            Page<ReferralRecord> page = referralRecordRepository.findByPatientID(patientID, pageable);
             return new Result(page);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
