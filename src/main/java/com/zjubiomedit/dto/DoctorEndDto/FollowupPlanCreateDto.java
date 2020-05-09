@@ -8,6 +8,6 @@ import java.util.Date;
 public class FollowupPlanCreateDto {
     private Long patientID;
     private Date planDate;
-    private String followUpType;
+    private String followupType;
     private String memo;
 }
