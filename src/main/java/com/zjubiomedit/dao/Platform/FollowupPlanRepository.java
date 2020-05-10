@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long> {
 
-    @Query(value = "select count(distinct fp.patientID) from FollowupPlan fp " +
+    @Query(value = "select count(fp.serialNo) from FollowupPlan fp " +
             "where fp.patientID in " +
             "(select mpi.patientID from ManagedPatientIndex mpi " +
             "where mpi.manageStatus <> 9 and (mpi.doctorID = :viewerID or mpi.hospitalID = :viewerID)) " +
@@ -49,7 +49,7 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
             "and cmd.patientID = fp.patientID")
     Page<FollowupPagingDto> findFollowupPageByViewerIDAndStatusAndTime(Long viewerID, Integer status, Date startDate, Date endDate, Pageable pageable);
 
-    @Query(value = "select count(distinct fp.patientID) from FollowupPlan fp " +
+    @Query(value = "select count(fp.serialNo) from FollowupPlan fp " +
             "where fp.patientID in " +
             "(select patientID from ReferralRecord " +
             "where doctorID = :viewerID or orgCode in" +
