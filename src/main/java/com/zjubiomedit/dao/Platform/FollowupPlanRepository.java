@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -80,4 +81,6 @@ public interface FollowupPlanRepository extends JpaRepository<FollowupPlan, Long
             "and dua.orgCode = od.orgCode " +
             "and cmd.patientID = fp.patientID")
     Page<FollowupPagingDto> findReferralFollowupPageByViewerIDAndStatusAndTime(Long viewerID, Integer status, Date startDate, Date endDate, Pageable pageable);
+
+    List<FollowupPlan> findByStatusAndPlanDateIsLessThan(Integer status, Date date);
 }

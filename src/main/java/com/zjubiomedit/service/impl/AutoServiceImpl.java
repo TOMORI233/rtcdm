@@ -66,6 +66,8 @@ public class AutoServiceImpl implements AutoService {
     COPDManageDetailRepository copdManageDetailRepository;
     @Autowired
     ManageServiceImpl manageService;
+    @Autowired
+    FollowupPlanRepository followupPlanRepository;
 
     @Value("${test.hospital.total}")
     private Long hosTotal;
@@ -475,6 +477,22 @@ public class AutoServiceImpl implements AutoService {
             }
         }
 
+    }
+
+    @Override
+    public void autoUpdateFollowupPlanStatus() {
+        // 找到今天之前所有未开始计划，status置2
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        Date todayZero = calendar.getTime();
+        List<FollowupPlan> followupPlanList = followupPlanRepository.findByStatusAndPlanDateIsLessThan(Utils.FOLLOW_PLAN_TODO, todayZero);
+        followupPlanList.forEach(followupPlan -> {
+            followupPlan.setStatus(Utils.FOLLOW_PLAN_ABOLISHED);
+        });
+        followupPlanRepository.saveAll(followupPlanList);
     }
 
 
