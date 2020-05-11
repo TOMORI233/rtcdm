@@ -85,9 +85,11 @@ public class ManageServiceImpl implements ManageService {
                     newIndex.setManageStartDateTime(dt);
                     managedPatientIndexRepository.save(newIndex);
                     // 修改PatientUserAuths表用户状态
-                    PatientUserAuths thisPatient = patientUserAuthsRepository.findByUserID(patientID);
-                    thisPatient.setStatus(Utils.USER_ACTIVE);
-                    patientUserAuthsRepository.save(thisPatient);
+                    Optional<PatientUserAuths> thisPatientOptional = patientUserAuthsRepository.findByUserID(patientID);
+                    thisPatientOptional.ifPresent(thisPatient->{
+                        thisPatient.setStatus(Utils.USER_ACTIVE);
+                        patientUserAuthsRepository.save(thisPatient);
+                    });
                     // COPDManageDetail建立患者管理等级
                     COPDManageDetail thisManage = new COPDManageDetail();
                     thisManage.setPatientID(patientID);

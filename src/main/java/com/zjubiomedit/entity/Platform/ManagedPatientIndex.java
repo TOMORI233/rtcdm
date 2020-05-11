@@ -13,7 +13,7 @@ public class ManagedPatientIndex extends PlatformBaseEntity {
     @Column(length = 100)
     private String patientFeature; //如有多个，之间用逗号分隔，例如：老年人，肥胖，残疾人
     @Column(nullable = false)
-    private Integer manageClass = 0; //哪种疾病
+    private Integer manageClass = 0; //哪种疾病，0-copd
     @Column(nullable = false)
     private Integer manageStatus = 0; // 0-管理中，1-向上转诊，2-向下转诊已，9-终止管理
     @Column(nullable = false)

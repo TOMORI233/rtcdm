@@ -7,10 +7,7 @@ import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatientDto;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorListDto;
-import com.zjubiomedit.entity.Platform.AlertRecord;
-import com.zjubiomedit.entity.Platform.FollowupRecord;
-import com.zjubiomedit.entity.Platform.ManagedPatientIndex;
-import com.zjubiomedit.entity.Platform.ReferralRecord;
+import com.zjubiomedit.entity.Platform.*;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
 import com.zjubiomedit.entity.User.PatientUserBaseInfo;
@@ -26,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -167,17 +165,34 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result createPatientUser(DoctorCreatePatientDto doctorCreatePatientDto) {
         try {
+            // 存入PatientUserAuths表并生成userID
             PatientUserAuths patientUserAuths = new PatientUserAuths();
-            PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
-            ManagedPatientIndex managedPatientIndex = new ManagedPatientIndex();
             BeanUtils.copyProperties(doctorCreatePatientDto, patientUserAuths);
+            patientUserAuths.setStatus(Utils.USER_ACTIVE);
+            PatientUserAuths savePatientUser = patientUserAuthsRepository.save(patientUserAuths);
+            Long patientID = savePatientUser.getUserID();
+            // 存入PatientUserBaseInfo表
+            PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
             BeanUtils.copyProperties(doctorCreatePatientDto, patientUserBaseInfo);
+            patientUserBaseInfo.setPhone(savePatientUser.getMobilePhone());
+            patientUserBaseInfo.setUserID(patientID);
+            patientUserBaseInfoRepository.save(patientUserBaseInfo);
+            // 存入ManagePatientIndex表
+            ManagedPatientIndex managedPatientIndex = new ManagedPatientIndex();
             BeanUtils.copyProperties(doctorCreatePatientDto, managedPatientIndex);
-            managedPatientIndex.setPatientID(doctorCreatePatientDto.getUserID());
-            patientUserAuthsRepository.save(patientUserAuths);
-            PatientUserBaseInfo userBaseInfo = patientUserBaseInfoRepository.save(patientUserBaseInfo);
+            managedPatientIndex.setPatientID(patientID);
+            managedPatientIndex.setManageStartDateTime(new Date());
+            String orgCode = doctorCreatePatientDto.getOrgCode();
+            Optional<DoctorUserAuths> optional = doctorUserAuthsRepository.findFirstByOrgCodeAndAuthAndStatus(orgCode, Utils.GROUP, Utils.USER_ACTIVE);
+            optional.ifPresent(doctorUserAuths -> {
+                managedPatientIndex.setHospitalID(doctorUserAuths.getUserID());
+            });
             managedPatientIndexRepository.save(managedPatientIndex);
-            return new Result(userBaseInfo);
+            // COPDManageDetail建立患者管理等级
+            COPDManageDetail copdManageDetail = new COPDManageDetail();
+            copdManageDetail.setPatientID(patientID);
+            copdManageDetailRepository.save(copdManageDetail);
+            return new Result();
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }

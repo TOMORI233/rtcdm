@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PatientUserAuthsRepository extends JpaRepository<PatientUserAuths, Long> {
-    PatientUserAuths findByUserID(Long userID);
+    Optional<PatientUserAuths> findByUserID(Long userID);
 
     @Query("select userID from PatientUserAuths " +
             "where status = 0")

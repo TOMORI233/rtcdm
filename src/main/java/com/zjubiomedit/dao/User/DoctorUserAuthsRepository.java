@@ -33,4 +33,6 @@ public interface DoctorUserAuthsRepository extends CrudRepository<DoctorUserAuth
 
     @Query("select count(userID) from DoctorUserAuths")
     Long CountAll();
+
+    Optional<DoctorUserAuths> findFirstByOrgCodeAndAuthAndStatus(String orgCode, Integer auth, Integer status);
 }
