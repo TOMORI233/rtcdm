@@ -35,7 +35,8 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and cmd.patientID = mpi.patientID " +
             "and pub.userID = mpi.patientID " +
             "and dua.userID = mpi.doctorID " +
-            "and od.orgCode = dua.orgCode")
+            "and od.orgCode = dua.orgCode " +
+            "order by mpi.patientID asc")
     Page<ManageIndexPagingDto> findAllManageIndexByDoctorID(@Param("doctorID") Long doctorID, Pageable pageable);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto" +
@@ -50,7 +51,8 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and cmd.patientID = mpi.patientID " +
             "and pub.userID = mpi.patientID " +
             "and dua.userID = mpi.doctorID " +
-            "and od.orgCode = dua.orgCode")
+            "and od.orgCode = dua.orgCode " +
+            "order by mpi.patientID asc")
     Page<ManageIndexPagingDto> findManagingManageIndexByDoctorID(Long doctorID, Pageable pageable);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto" +
@@ -65,7 +67,8 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and cmd.patientID = mpi.patientID " +
             "and pub.userID = mpi.patientID " +
             "and dua.userID = mpi.doctorID " +
-            "and od.orgCode = dua.orgCode")
+            "and od.orgCode = dua.orgCode " +
+            "order by mpi.patientID asc")
     Page<ManageIndexPagingDto> findReferralOutManageIndexByDoctorID(Long doctorID, Pageable pageable);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto" +
@@ -81,7 +84,8 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and cmd.patientID = mpi.patientID " +
             "and pub.userID = mpi.patientID " +
             "and dua.userID = mpi.doctorID " +
-            "and od.orgCode = dua.orgCode")
+            "and od.orgCode = dua.orgCode " +
+            "order by mpi.patientID asc")
     Page<ManageIndexPagingDto> findReferralInManageIndexByDoctorID(Long doctorID, Pageable pageable);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto" +
@@ -100,7 +104,8 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and cmd.patientID = mpi.patientID " +
             "and pub.userID = mpi.patientID " +
             "and dua.userID = mpi.doctorID " +
-            "and od.orgCode = dua.orgCode")
+            "and od.orgCode = dua.orgCode " +
+            "order by mpi.patientID asc")
     Page<ManageIndexPagingDto> findAllManageIndexByOrgCode(@Param("orgCode") String orgCode, Pageable pageable);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto" +
@@ -116,8 +121,9 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and mpi.manageStatus = 0 " +
             "and cmd.patientID = mpi.patientID " +
             "and pub.userID = mpi.patientID " +
-            "and dua.orgCode = od.orgCode " +
-            "and dua.userID = mpi.doctorID")
+            "and dua.userID = mpi.doctorID " +
+            "and od.orgCode = dua.orgCode " +
+            "order by mpi.patientID asc")
     Page<ManageIndexPagingDto> findManagingManageIndexByOrgCode(String orgCode, Pageable pageable);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto" +
@@ -133,8 +139,9 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and (mpi.manageStatus = 1 or mpi.manageStatus = 2) " +
             "and cmd.patientID = mpi.patientID " +
             "and pub.userID = mpi.patientID " +
-            "and dua.orgCode = od.orgCode " +
-            "and dua.userID = mpi.doctorID")
+            "and dua.userID = mpi.doctorID " +
+            "and od.orgCode = dua.orgCode " +
+            "order by mpi.patientID asc")
     Page<ManageIndexPagingDto> findReferralOutManageIndexByOrgCode(String orgCode, Pageable pageable);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.ManageIndexPagingDto" +
@@ -150,8 +157,9 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
             "and mpi.patientID = rr.patientID " +
             "and cmd.patientID = rr.patientID " +
             "and pub.userID = rr.patientID " +
-            "and dua.orgCode = od.orgCode " +
-            "and dua.userID = rr.doctorID")
+            "and dua.userID = mpi.doctorID " +
+            "and od.orgCode = dua.orgCode " +
+            "order by mpi.patientID asc")
     Page<ManageIndexPagingDto> findReferralInManageIndexByOrgCode(String orgCode, Pageable pageable);
 
     @Query(value = "select count(distinct patientID) " +
@@ -184,9 +192,8 @@ public interface ManagedPatientIndexRepository extends JpaRepository<ManagedPati
     Long CountReferralOutByOrgCode(@Param("orgCode") String orgCode);
 
     @Query(value = "select count(distinct rr.patientID) " +
-            "from ReferralRecord rr, DoctorUserAuths dua " +
-            "where rr.doctorID = dua.userID " +
-            "and dua.orgCode = :orgCode " +
+            "from ReferralRecord rr " +
+            "where rr.orgCode = :orgCode " +
             "and rr.status = 1")
     Long CountReferralInByOrgCode(@Param("orgCode") String orgCode);
 
