@@ -1,5 +1,6 @@
 package com.zjubiomedit.entity.Platform;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 public class FollowupRecord extends PlatformBaseEntity{
 
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date planDate; //常规随访时为计划随访时间,预警干预为预警产生时间
     @Column(length = 100)
     private String followupType; //常规随访/预警干预
@@ -24,6 +26,7 @@ public class FollowupRecord extends PlatformBaseEntity{
     @Column(length = 100)
     private String failureReason; // 用于描述失访的原因
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date deathTime; // 只有当失访原因为亡故时才有意义
     @Column(nullable = false)
     private Integer templateCode = 1; // 1-慢阻肺随访记录表, 2-哮喘随访
@@ -34,6 +37,7 @@ public class FollowupRecord extends PlatformBaseEntity{
     @Column(nullable = false)
     private Long executeDoctorID;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @CreatedDate
     private Date executeTime; // 实际执行时间
 }

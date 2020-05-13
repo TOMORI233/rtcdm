@@ -23,7 +23,7 @@ public class DictController {
         return dictService.createDivision(divisionDict);
     }
 
-    @ApiOperation(value = "【患者】获取行政区划列表", response = Result.class)
+    @ApiOperation(value = "【综合】获取行政区划列表", response = Result.class)
     @GetMapping(value = "/division/list")
     public Result divisionList(){
         return dictService.getDivision();
@@ -35,7 +35,7 @@ public class DictController {
         return dictService.createOrg(orgDict);
     }
 
-    @ApiOperation(value = "【患者】获取医疗机构列表", response = Result.class)
+    @ApiOperation(value = "【综合】获取医疗机构列表", response = Result.class)
     @GetMapping(value = "/org/list")
     public Result organizationList(@RequestParam(value = "divisionCode") String divisionCode){
         return dictService.getOrgByDivision(divisionCode);

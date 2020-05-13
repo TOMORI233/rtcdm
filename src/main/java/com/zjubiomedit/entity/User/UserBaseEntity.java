@@ -1,5 +1,6 @@
 package com.zjubiomedit.entity.User;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.annotations.Expose;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,11 +31,13 @@ public abstract class UserBaseEntity {
     @Column(nullable = false)
     private Integer status = 0; // 0-正常，1-冻结，10-待审核
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @CreatedDate
     private Date registerDateTime;
     @Column(nullable = false)
     private Integer loginCount = 0;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @LastModifiedDate
     private Date lastLoginDateTime;
 

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author leiyi sheng
@@ -19,4 +20,12 @@ public interface OrgDictRepository extends CrudRepository<OrgDict, Long> {
     @Query(value = "select orgName from OrgDict " +
             "where orgCode = :orgCode and isValid = 1")
     String findOrgNameByOrgCode(String orgCode);
+
+    @Query(value = "select od.orgName from OrgDict od " +
+            "where od.orgCode in " +
+            "(select orgCode from DoctorUserAuths " +
+            "where userID = :doctorID)")
+    String findOrgNameByDoctorID(Long doctorID);
+
+    Optional<OrgDict> findByOrgCodeAndIsValid(String orgCode, Integer isValid);
 }

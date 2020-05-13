@@ -1,5 +1,6 @@
 package com.zjubiomedit.entity.Platform;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -20,12 +21,14 @@ public class ManagementPlan extends PlatformBaseEntity{
     @Column(length = 1500)
     private String content;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @CreatedDate
     private Date planStartDateTime;
     private Long plannerID;
     @Column(length = 45, columnDefinition = "nvarchar")
     private String plannerName;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @LastModifiedDate
     private Date LastModifyDateTime;
     private Long modifierID;

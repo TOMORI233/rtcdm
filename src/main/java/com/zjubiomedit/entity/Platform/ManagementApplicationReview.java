@@ -1,5 +1,6 @@
 package com.zjubiomedit.entity.Platform;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -26,6 +27,7 @@ public class ManagementApplicationReview extends PlatformBaseEntity{
     private Integer status = 0; // 0-未审核，1-审核通过，2-审核不通过，3-忽略。
     private Long reviewerID; //审核人对应的用户ID
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @LastModifiedDate
     private Date reviewDateTime;
     private String refuseReason;

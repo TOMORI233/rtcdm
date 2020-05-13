@@ -1,5 +1,6 @@
 package com.zjubiomedit.entity.Platform;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 @Data
 public class FollowupPlan extends PlatformBaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date planDate;
     @Column(nullable = false, length = 100)
     private String followupType;

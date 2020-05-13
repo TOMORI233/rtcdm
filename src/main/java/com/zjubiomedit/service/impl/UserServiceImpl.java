@@ -1,6 +1,7 @@
 package com.zjubiomedit.service.impl;
 
 import com.zjubiomedit.config.exception.CommonJsonException;
+import com.zjubiomedit.dao.Dict.OrgDictRepository;
 import com.zjubiomedit.dao.Platform.*;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
@@ -23,16 +24,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    DoctorUserAuthsRepository doctorUserRepository;
     @Autowired
     PatientUserAuthsRepository patientUserAuthsRepository;
     @Autowired
@@ -51,6 +52,8 @@ public class UserServiceImpl implements UserService {
     AlertRecordRepository alertRecordRepository;
     @Autowired
     FollowupRecordRepository followupRecordRepository;
+    @Autowired
+    OrgDictRepository orgDictRepository;
 
     @Override
     public Result createDoctorUser(DoctorUserAuths doctorUserAuths) {
@@ -59,7 +62,7 @@ public class UserServiceImpl implements UserService {
             if (userAuthsOptional.isPresent()) {
                 return new Result(ErrorEnum.E_10003);
             }
-            DoctorUserAuths newDoctor = doctorUserRepository.save(doctorUserAuths);
+            DoctorUserAuths newDoctor = doctorUserAuthsRepository.save(doctorUserAuths);
             return new Result(newDoctor);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
@@ -69,7 +72,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result getPatientBaseInfo(Long patientID) {
         try {
-            return new Result(patientUserBaseInfoRepository.findByUserID(patientID));
+            Optional<PatientUserBaseInfo> optional = patientUserBaseInfoRepository.findByUserID(patientID);
+            return optional.map((Function<PatientUserBaseInfo, Result>) Result::new).orElseGet(() -> new Result(ErrorEnum.E_10008));
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
         }
@@ -96,7 +100,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result getPatientManageDetail(Long patientID) {
         try {
-            return new Result(managedPatientIndexRepository.findByPatientID(patientID));
+            Optional<ManagedPatientIndex> optional = managedPatientIndexRepository.findByPatientID(patientID);
+            return optional.map((Function<ManagedPatientIndex, Result>) Result::new).orElseGet(() -> new Result(ErrorEnum.E_10008));
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
         }
@@ -105,7 +110,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result getPatientReferralDetail(Long patientID) {
         try {
-            return new Result(referralRecordRepository.findFirstByPatientIDOrderByStartDateTimeDesc(patientID));
+            Optional<ReferralRecord> optional = referralRecordRepository.findFirstByPatientIDOrderByStartDateTimeDesc(patientID);
+            return optional.map((Function<ReferralRecord, Result>) Result::new).orElseGet(() -> new Result(ErrorEnum.E_10008));
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
         }
@@ -157,6 +163,30 @@ public class UserServiceImpl implements UserService {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "serialNo");
             Page<ReferralRecord> page = referralRecordRepository.findByPatientID(patientID, pageable);
             return new Result(page);
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
+    }
+
+    @Override
+    public Result getOrgNameByDoctorID(Long doctorID) {
+        try {
+            return new Result(orgDictRepository.findOrgNameByDoctorID(doctorID));
+        } catch (NullPointerException e) {
+            throw new CommonJsonException(ErrorEnum.E_10007);
+        }
+    }
+
+    @Override
+    public Result getDoctorListByOrgCode(String orgCode) {
+        try {
+            List<DoctorUserAuths> doctorUserAuthsList = doctorUserAuthsRepository.findByOrgCodeAndStatusAndAuth(orgCode,Utils.USER_ACTIVE, Utils.PERSONAL);
+            List<DoctorListDto> doctorListDtoList = new ArrayList<>();
+            doctorUserAuthsList.forEach(doctorUserAuths -> {
+                DoctorListDto doctorListDto = new DoctorListDto(doctorUserAuths.getUserID(),doctorUserAuths.getName());
+                doctorListDtoList.add(doctorListDto);
+            });
+            return new Result(doctorListDtoList);
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
         }

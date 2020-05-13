@@ -13,7 +13,7 @@ public interface DoctorUserAuthsRepository extends CrudRepository<DoctorUserAuth
 
     Optional<DoctorUserAuths> findByUserName(String userName);
 
-    List<DoctorUserAuths> findByOrgCodeAndStatus(String orgCode, Integer status);
+    List<DoctorUserAuths> findByOrgCodeAndStatusAndAuth(String orgCode, Integer status, Integer auth);
 
     @Query(value = "select " +
             "new com.zjubiomedit.dto.DoctorEndDto.DoctorListDto(dua2.userID, dua2.name) " +

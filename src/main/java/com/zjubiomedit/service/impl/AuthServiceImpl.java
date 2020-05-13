@@ -1,8 +1,10 @@
 package com.zjubiomedit.service.impl;
 
 import com.zjubiomedit.config.exception.CommonJsonException;
+import com.zjubiomedit.dao.Dict.OrgDictRepository;
 import com.zjubiomedit.dao.User.DoctorUserAuthsRepository;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorUserLoginDto;
+import com.zjubiomedit.entity.Dict.OrgDict;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.service.AuthService;
 import com.zjubiomedit.util.Result;
@@ -26,6 +28,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     DoctorUserAuthsRepository doctorUserRepository;
+    @Autowired
+    OrgDictRepository orgDictRepository;
 
     @Override
     public Result authLogin(String userName, String password) {
@@ -66,10 +70,9 @@ public class AuthServiceImpl implements AuthService {
 //            return new Result(ErrorEnum.E_501);
 //        }
 
-        if(userName == null || password == null){
+        if (userName == null || password == null) {
             return new Result(ErrorEnum.E_501);
-        }
-        else{
+        } else {
             try {
                 Optional<DoctorUserAuths> userAuths = doctorUserRepository.findByUserName(userName);
                 if (userAuths.isPresent()) {
@@ -84,9 +87,12 @@ public class AuthServiceImpl implements AuthService {
                             doctorUserLoginDto.setOrgCode(user.getOrgCode());
                             doctorUserLoginDto.setStatus(user.getStatus());
                             doctorUserLoginDto.setUserID(user.getUserID());
+                            Optional<OrgDict> optionalOrgDict = orgDictRepository.findByOrgCodeAndIsValid(user.getOrgCode(), Utils.VALID);
+                            optionalOrgDict.ifPresent(orgDict -> {
+                                doctorUserLoginDto.setDivisionCode(orgDict.getDivisionCode());
+                            });
                             return new Result(doctorUserLoginDto);
-                        }
-                        else {
+                        } else {
                             return new Result(ErrorEnum.E_10002);
                         }
                     } else {

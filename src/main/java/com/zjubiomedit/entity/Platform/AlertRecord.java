@@ -1,10 +1,14 @@
 package com.zjubiomedit.entity.Platform;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 @Entity
 @Data
@@ -21,6 +25,7 @@ public class AlertRecord extends PlatformBaseEntity{
     @Column(length = 1000)
     private String alertMessage;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @CreatedDate
     private Date alertTime;
     @Column(nullable = false)

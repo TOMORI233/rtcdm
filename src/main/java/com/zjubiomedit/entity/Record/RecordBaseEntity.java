@@ -1,5 +1,6 @@
 package com.zjubiomedit.entity.Record;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,6 +21,7 @@ public abstract class RecordBaseEntity {
     @Column(length = 100)
     private String memo;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Column(nullable = false)
     private Date recordTime; // 记录实际测量时间
     @Temporal(TemporalType.TIMESTAMP)

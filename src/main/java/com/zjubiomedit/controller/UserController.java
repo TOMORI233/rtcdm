@@ -58,10 +58,22 @@ public class UserController {
         return userService.getDoctorList(hospitalID);
     }
 
+    @ApiOperation(value = "【医生/医院】获取某院医生列表", response = Result.class)
+    @GetMapping(value = "/doctor/list/anyhos")
+    public Result doctorSelectListAnyHos(@RequestParam(value = "orgCode") String orgCode){
+        return userService.getDoctorListByOrgCode(orgCode);
+    }
+
     @ApiOperation(value = "获取医生/医院账户ID对应姓名", response = Result.class)
     @GetMapping(value = "/doctor/name")
     public Result doctorNameByID(@RequestParam(value = "doctorID") Long doctorID){
         return userService.getDoctorNameByDoctorID(doctorID);
+    }
+
+    @ApiOperation(value = "获取医生/医院账户ID对应机构名", response = Result.class)
+    @GetMapping(value = "/doctor/orgname")
+    public Result orgNameByID(@RequestParam(value = "doctorID") Long doctorID){
+        return userService.getOrgNameByDoctorID(doctorID);
     }
 
     @ApiOperation(value = "获取患者管理计划历史列表", response = Result.class)

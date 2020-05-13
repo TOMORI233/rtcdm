@@ -42,4 +42,8 @@ public interface UserService {
     Result getPatientFollowupHistory(Long patientID, Integer pageIndex, Integer pageOffset);
 
     Result getPatientReferralHistory(Long patientID, Integer pageIndex, Integer pageOffset);
+
+    Result getOrgNameByDoctorID(Long doctorID);
+
+    Result getDoctorListByOrgCode(String orgCode);
 }

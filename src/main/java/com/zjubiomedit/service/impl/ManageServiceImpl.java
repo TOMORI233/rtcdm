@@ -272,6 +272,7 @@ public class ManageServiceImpl implements ManageService {
                     return new Result(ErrorEnum.E_401);
                 }
                 Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset);
+                // 按patientID排序，否则分页错误
                 switch (type) {
                     case Utils.TYPE_ALL:
                         Page<ManageIndexPagingDto> pageAll = managedPatientIndexRepository.findAllManageIndexByDoctorID(doctorID, pageable);
@@ -301,6 +302,7 @@ public class ManageServiceImpl implements ManageService {
     public Result pagingHospitalManageIndex(String orgCode, Integer pageIndex, Integer pageOffset, Integer type) {
         try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset);
+            // 按patientID排序，否则分页错误
             switch (type) {
                 case Utils.TYPE_ALL:
                     Page<ManageIndexPagingDto> pageAll = managedPatientIndexRepository.findAllManageIndexByOrgCode(orgCode, pageable);
@@ -469,20 +471,22 @@ public class ManageServiceImpl implements ManageService {
                         thisAlert.setExecuteDoctorID(followupRecordDto.getExecuteDoctorID());
                         thisAlert.setFollowUpSerialNo(thisFollowup.getSerialNo());
                         thisAlert.setStatus(Utils.ALERT_FOLLOWEDUP);
+                        thisFollowup.setPlanDate(thisAlert.getAlertTime());
+                        followupRecordRepository.save(thisFollowup);
                         alertRecordRepository.save(thisAlert);
-                        result.setCode(0);
-                        result.setMessage("success");
                     });
                 }
                 if (followupRecordDto.getPlanSerialNo() != null) {
                     Optional<FollowupPlan> thisPlanOptional = followupPlanRepository.findBySerialNoAndStatus(followupRecordDto.getPlanSerialNo(), Utils.FOLLOW_PLAN_TODO);
                     thisPlanOptional.ifPresent(thisPlan -> {
                         thisPlan.setStatus(Utils.FOLLOW_PLAN_FINISHED);
+                        thisFollowup.setPlanDate(thisPlan.getPlanDate());
+                        followupRecordRepository.save(thisFollowup);
                         followupPlanRepository.save(thisPlan);
-                        result.setCode(0);
-                        result.setMessage("success");
                     });
                 }
+                result.setCode(0);
+                result.setMessage("success");
             });
             return result;
         } catch (NullPointerException e) {
