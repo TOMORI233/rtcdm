@@ -30,7 +30,8 @@ public class AlertRecord extends PlatformBaseEntity{
     private Date alertTime;
     @Column(nullable = false)
     private Integer status; // 0-未处理 1-已随访 2-已忽略
-    private Long followUpSerialNo; // Status为1时，这里存对应的随访记录序号。
+    private Long followupSerialNo; // Status为1时，这里存对应的随访记录序号。
+    private Long referralSerialNo; // Status为2时，这里存对应的转诊记录序号。
     private String ignoreReason; // Status为2时有效。忽略预警的原因
     private Long executeDoctorID;
     @Temporal(TemporalType.TIMESTAMP)

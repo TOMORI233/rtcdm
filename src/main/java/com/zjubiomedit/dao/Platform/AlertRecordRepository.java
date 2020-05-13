@@ -19,7 +19,7 @@ import java.util.Optional;
 public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> {
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertDto.AlertBaseInfo" +
-            "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followUpSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
+            "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followupSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
             "mpi.manageStatus, mpi.manageStartDateTime, mpi.manageClass, mpi.complianceRate, mpi.followupTimes, mpi.lastFollowupDate, " +
             "dua.name, dua.orgCode, " +
@@ -51,7 +51,7 @@ public interface AlertRecordRepository extends JpaRepository<AlertRecord, Long> 
     Page<AlertRecord> findByPatientID(Long patientID, Pageable pageable);
 
     @Query(value = "select new com.zjubiomedit.dto.PagingDto.AlertDto.AlertBaseInfo" +
-            "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followUpSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
+            "(ar.serialNo, ar.patientID, ar.alertType, ar.alertName, ar.alertReason, ar.alertMessage, ar.alertTime, ar.status, ar.followupSerialNo, ar.ignoreReason, ar.executeDoctorID, ar.executeTime, " +
             "pub.name, pub.sex, pub.dateOfBirth, " +
             "mpi.manageStatus, mpi.manageStartDateTime, mpi.manageClass, mpi.complianceRate, mpi.followupTimes, mpi.lastFollowupDate, " +
             "dua.name, dua.orgCode, " +

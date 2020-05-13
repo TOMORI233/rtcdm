@@ -17,7 +17,7 @@ public class AlertBaseInfo {
     private String alertMessage;
     private Date alertTime;
     private Integer status;
-    private Long followUpSerialNo;
+    private Long followupSerialNo;
     private String ignoreReason;
     private Long executeDoctorID;
     private Date executeTime;

@@ -214,7 +214,14 @@ public class ManageServiceImpl implements ManageService {
         try {
             ReferralRecord newRecord = new ReferralRecord();
             BeanUtils.copyProperties(referralApplyDto, newRecord);
-            referralRecordRepository.save(newRecord);
+            ReferralRecord saveRecord = referralRecordRepository.save(newRecord);
+            Optional<AlertRecord> optional = alertRecordRepository.findBySerialNoAndStatus(referralApplyDto.getAlertSerialNo(),Utils.ALERT_UNPROCESSED);
+            optional.ifPresent(alertRecord -> {
+                alertRecord.setStatus(Utils.ALERT_REFERRAL);
+                alertRecord.setExecuteDoctorID(referralApplyDto.getInitiator());
+                alertRecord.setReferralSerialNo(saveRecord.getSerialNo());
+                alertRecordRepository.save(alertRecord);
+            });
             return new Result();
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
@@ -469,7 +476,7 @@ public class ManageServiceImpl implements ManageService {
                     Optional<AlertRecord> thisAlertOptional = alertRecordRepository.findBySerialNoAndStatus(followupRecordDto.getAlertSerialNo(), Utils.ALERT_UNPROCESSED);
                     thisAlertOptional.ifPresent(thisAlert -> {
                         thisAlert.setExecuteDoctorID(followupRecordDto.getExecuteDoctorID());
-                        thisAlert.setFollowUpSerialNo(thisFollowup.getSerialNo());
+                        thisAlert.setFollowupSerialNo(thisFollowup.getSerialNo());
                         thisAlert.setStatus(Utils.ALERT_FOLLOWEDUP);
                         thisFollowup.setPlanDate(thisAlert.getAlertTime());
                         followupRecordRepository.save(thisFollowup);

@@ -11,4 +11,5 @@ public class ReferralApplyDto {
     private String orgCode;
     private Long doctorID;
     private Long initiator;
+    private Long alertSerialNo;
 }
