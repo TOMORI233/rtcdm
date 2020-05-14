@@ -28,4 +28,6 @@ public interface OrgDictRepository extends CrudRepository<OrgDict, Long> {
     String findOrgNameByDoctorID(Long doctorID);
 
     Optional<OrgDict> findByOrgCodeAndIsValid(String orgCode, Integer isValid);
+
+    List<OrgDict> findByIsValid(Integer valid);
 }

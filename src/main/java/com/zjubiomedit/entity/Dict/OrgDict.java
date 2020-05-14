@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 
 @Entity
 @Data
@@ -33,5 +34,8 @@ public class OrgDict {
     private Integer itemSortValue;
     @Column(nullable = false)
     private Integer isValid = 1;
+    @Expose
+    @Transient
+    private ArrayList<OrgDict> children;
 
 }

@@ -30,7 +30,7 @@ public interface DictService {
      */
     Result getOrgByDivision(String divisionCode);
 
-    Result getHospitalList(String orgCode);
+    Result getSubHospitalList(String orgCode);
 
     Result getOrgNameByOrgCode(String orgCode);
 }

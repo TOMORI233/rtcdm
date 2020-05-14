@@ -44,7 +44,7 @@ public class DictController {
     @ApiOperation(value = "【医生/医院】获取下属医院列表", response = Result.class)
     @GetMapping(value = "/org/subhospital")
     public Result hospitalSelectList(@RequestParam(value = "orgCode") String orgCode){
-        return dictService.getHospitalList(orgCode);
+        return dictService.getSubHospitalList(orgCode);
     }
 
     @ApiOperation(value = "获取机构代码对应机构名称", response = Result.class)
