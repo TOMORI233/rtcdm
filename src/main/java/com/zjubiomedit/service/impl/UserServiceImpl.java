@@ -8,6 +8,8 @@ import com.zjubiomedit.dao.User.PatientUserAuthsRepository;
 import com.zjubiomedit.dao.User.PatientUserBaseInfoRepository;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorCreatePatientDto;
 import com.zjubiomedit.dto.DoctorEndDto.DoctorListDto;
+import com.zjubiomedit.dto.DoctorEndDto.ManageDetailDto;
+import com.zjubiomedit.dto.DoctorEndDto.ReferralDetailDto;
 import com.zjubiomedit.entity.Platform.*;
 import com.zjubiomedit.entity.User.DoctorUserAuths;
 import com.zjubiomedit.entity.User.PatientUserAuths;
@@ -101,7 +103,17 @@ public class UserServiceImpl implements UserService {
     public Result getPatientManageDetail(Long patientID) {
         try {
             Optional<ManagedPatientIndex> optional = managedPatientIndexRepository.findByPatientID(patientID);
-            return optional.map((Function<ManagedPatientIndex, Result>) Result::new).orElseGet(() -> new Result(ErrorEnum.E_10008));
+            ManageDetailDto manageDetailDto = new ManageDetailDto();
+            Result result = new Result(ErrorEnum.E_10008);
+            optional.ifPresent(managedPatientIndex -> {
+                BeanUtils.copyProperties(managedPatientIndex, manageDetailDto);
+                manageDetailDto.setDoctorName(doctorUserAuthsRepository.findDoctorNameByDoctorID(managedPatientIndex.getDoctorID()));
+                manageDetailDto.setOrgName(orgDictRepository.findOrgNameByDoctorID(managedPatientIndex.getDoctorID()));
+                result.setCode(0);
+                result.setMessage("success");
+                result.setData(manageDetailDto);
+            });
+            return result;
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
         }
@@ -111,7 +123,17 @@ public class UserServiceImpl implements UserService {
     public Result getPatientReferralDetail(Long patientID) {
         try {
             Optional<ReferralRecord> optional = referralRecordRepository.findFirstByPatientIDOrderByStartDateTimeDesc(patientID);
-            return optional.map((Function<ReferralRecord, Result>) Result::new).orElseGet(() -> new Result(ErrorEnum.E_10008));
+            ReferralDetailDto referralDetailDto = new ReferralDetailDto();
+            Result result = new Result(ErrorEnum.E_10008);
+            optional.ifPresent(referralRecord -> {
+                BeanUtils.copyProperties(referralRecord, referralDetailDto);
+                referralDetailDto.setDoctorName(doctorUserAuthsRepository.findDoctorNameByDoctorID(referralRecord.getDoctorID()));
+                referralDetailDto.setOrgName(orgDictRepository.findOrgNameByOrgCode(referralRecord.getOrgCode()));
+                result.setCode(0);
+                result.setMessage("success");
+                result.setData(referralDetailDto);
+            });
+            return result;
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10007);
         }
@@ -180,10 +202,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result getDoctorListByOrgCode(String orgCode) {
         try {
-            List<DoctorUserAuths> doctorUserAuthsList = doctorUserAuthsRepository.findByOrgCodeAndStatusAndAuth(orgCode,Utils.USER_ACTIVE, Utils.PERSONAL);
+            List<DoctorUserAuths> doctorUserAuthsList = doctorUserAuthsRepository.findByOrgCodeAndStatusAndAuth(orgCode, Utils.USER_ACTIVE, Utils.PERSONAL);
             List<DoctorListDto> doctorListDtoList = new ArrayList<>();
             doctorUserAuthsList.forEach(doctorUserAuths -> {
-                DoctorListDto doctorListDto = new DoctorListDto(doctorUserAuths.getUserID(),doctorUserAuths.getName());
+                DoctorListDto doctorListDto = new DoctorListDto(doctorUserAuths.getUserID(), doctorUserAuths.getName());
                 doctorListDtoList.add(doctorListDto);
             });
             return new Result(doctorListDtoList);
