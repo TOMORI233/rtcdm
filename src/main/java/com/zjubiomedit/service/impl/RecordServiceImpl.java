@@ -124,6 +124,7 @@ public class RecordServiceImpl implements RecordService {
             switch (type) {
                 case Utils.CAT:
                     List<CATRecord> catRecordList = catRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
+                    catRecordList.forEach(catRecord -> catRecord.setValue(catRecord.getScore()));
                     return new Result(catRecordList);
                 case Utils.DISCOMFORT:
                     List<DiscomfortRecord> discomfortRecordList = discomfortRecordRepository.findByPatientIDAndRecordTimeIsBetween(patientID, startDate, endDate);
@@ -167,6 +168,9 @@ public class RecordServiceImpl implements RecordService {
             switch (type) {
                 case Utils.CAT:
                     Page<CATRecord> catRecordPage = catRecordRepository.findByPatientID(patientID, pageable);
+                    catRecordPage.forEach(catRecord -> {
+                        catRecord.setValue(catRecord.getScore());
+                    });
                     return new Result(catRecordPage);
                 case Utils.DISCOMFORT:
                     Page<DiscomfortRecord> discomfortRecordPage = discomfortRecordRepository.findByPatientID(patientID, pageable);

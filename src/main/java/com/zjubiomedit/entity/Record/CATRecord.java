@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 @Entity
 @Data
@@ -15,4 +16,6 @@ public class CATRecord extends RecordBaseEntity {
     private String answer; // 答案
     private Integer duration; // 回答问卷所用时间  单位：s
 
+    @Transient
+    private Integer value;
 }
