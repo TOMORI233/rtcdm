@@ -215,34 +215,40 @@ public class UserServiceImpl implements UserService {
     @Override
     public Result createPatientUser(DoctorCreatePatientDto doctorCreatePatientDto) {
         try {
-            // 存入PatientUserAuths表并生成userID
-            PatientUserAuths patientUserAuths = new PatientUserAuths();
-            BeanUtils.copyProperties(doctorCreatePatientDto, patientUserAuths);
-            patientUserAuths.setStatus(Utils.USER_ACTIVE);
-            PatientUserAuths savePatientUser = patientUserAuthsRepository.save(patientUserAuths);
-            Long patientID = savePatientUser.getUserID();
-            // 存入PatientUserBaseInfo表
-            PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
-            BeanUtils.copyProperties(doctorCreatePatientDto, patientUserBaseInfo);
-            patientUserBaseInfo.setPhone(savePatientUser.getMobilePhone());
-            patientUserBaseInfo.setUserID(patientID);
-            patientUserBaseInfoRepository.save(patientUserBaseInfo);
-            // 存入ManagePatientIndex表
-            ManagedPatientIndex managedPatientIndex = new ManagedPatientIndex();
-            BeanUtils.copyProperties(doctorCreatePatientDto, managedPatientIndex);
-            managedPatientIndex.setPatientID(patientID);
-            managedPatientIndex.setManageStartDateTime(new Date());
-            String orgCode = doctorCreatePatientDto.getOrgCode();
-            Optional<DoctorUserAuths> optional = doctorUserAuthsRepository.findFirstByOrgCodeAndAuthAndStatus(orgCode, Utils.GROUP, Utils.USER_ACTIVE);
-            optional.ifPresent(doctorUserAuths -> {
-                managedPatientIndex.setHospitalID(doctorUserAuths.getUserID());
-            });
-            managedPatientIndexRepository.save(managedPatientIndex);
-            // COPDManageDetail建立患者管理等级
-            COPDManageDetail copdManageDetail = new COPDManageDetail();
-            copdManageDetail.setPatientID(patientID);
-            copdManageDetailRepository.save(copdManageDetail);
-            return new Result();
+            String userName = doctorCreatePatientDto.getUserName();
+            Optional<PatientUserAuths> optionalPatientUserAuths = patientUserAuthsRepository.findByUserName(userName);
+            if (optionalPatientUserAuths.isPresent()) {
+                return new Result(ErrorEnum.E_10003);
+            } else {
+                // 存入PatientUserAuths表并生成userID
+                PatientUserAuths patientUserAuths = new PatientUserAuths();
+                BeanUtils.copyProperties(doctorCreatePatientDto, patientUserAuths);
+                patientUserAuths.setStatus(Utils.USER_ACTIVE);
+                PatientUserAuths savePatientUser = patientUserAuthsRepository.save(patientUserAuths);
+                Long patientID = savePatientUser.getUserID();
+                // 存入PatientUserBaseInfo表
+                PatientUserBaseInfo patientUserBaseInfo = new PatientUserBaseInfo();
+                BeanUtils.copyProperties(doctorCreatePatientDto, patientUserBaseInfo);
+                patientUserBaseInfo.setPhone(savePatientUser.getMobilePhone());
+                patientUserBaseInfo.setUserID(patientID);
+                patientUserBaseInfoRepository.save(patientUserBaseInfo);
+                // 存入ManagePatientIndex表
+                ManagedPatientIndex managedPatientIndex = new ManagedPatientIndex();
+                BeanUtils.copyProperties(doctorCreatePatientDto, managedPatientIndex);
+                managedPatientIndex.setPatientID(patientID);
+                managedPatientIndex.setManageStartDateTime(new Date());
+                String orgCode = doctorCreatePatientDto.getOrgCode();
+                Optional<DoctorUserAuths> optionalDoctorUserAuths = doctorUserAuthsRepository.findFirstByOrgCodeAndAuthAndStatus(orgCode, Utils.GROUP, Utils.USER_ACTIVE);
+                optionalDoctorUserAuths.ifPresent(doctorUserAuths -> {
+                    managedPatientIndex.setHospitalID(doctorUserAuths.getUserID());
+                });
+                managedPatientIndexRepository.save(managedPatientIndex);
+                // COPDManageDetail建立患者管理等级
+                COPDManageDetail copdManageDetail = new COPDManageDetail();
+                copdManageDetail.setPatientID(patientID);
+                copdManageDetailRepository.save(copdManageDetail);
+                return new Result();
+            }
         } catch (NullPointerException e) {
             throw new CommonJsonException(ErrorEnum.E_10005);
         }

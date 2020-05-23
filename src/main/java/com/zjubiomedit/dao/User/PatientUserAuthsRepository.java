@@ -16,4 +16,6 @@ public interface PatientUserAuthsRepository extends JpaRepository<PatientUserAut
 
     @Query("select count(userID) from PatientUserAuths")
     Long CountAll();
+
+    Optional<PatientUserAuths> findByUserName(String userName);
 }

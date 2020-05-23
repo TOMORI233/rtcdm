@@ -12,4 +12,6 @@ public interface AuthService {
      * 登录表单提交
      */
     Result authLogin(String userName, String password);
+
+    Result authLogout();
 }

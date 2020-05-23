@@ -26,8 +26,12 @@ public class AuthController {
     @PostMapping(value = "/login")
     public Result doctorUserLogin(@RequestParam(value = "userName", required = false) String userName,
                                   @RequestParam(value = "password", required = false) String password){
-//        JsonObject jsonObject = JsonUtils.transformJson(loginUser);
-//        return authService.authLogin(jsonObject);
         return authService.authLogin(userName, password);
+    }
+
+    @ApiOperation(value = "医生用户登出", httpMethod = "POST")
+    @PostMapping(value = "/logout")
+    public Result doctorUserLogout() {
+        return authService.authLogout();
     }
 }
