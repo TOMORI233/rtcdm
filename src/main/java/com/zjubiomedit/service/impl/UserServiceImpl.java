@@ -127,8 +127,8 @@ public class UserServiceImpl implements UserService {
             Result result = new Result();
             optional.ifPresent(referralRecord -> {
                 BeanUtils.copyProperties(referralRecord, referralDetailDto);
-                referralDetailDto.setDoctorName(doctorUserAuthsRepository.findDoctorNameByDoctorID(referralRecord.getDoctorID()));
-                referralDetailDto.setOrgName(orgDictRepository.findOrgNameByOrgCode(referralRecord.getOrgCode()));
+                referralDetailDto.setTargetDoctorName(doctorUserAuthsRepository.findDoctorNameByDoctorID(referralRecord.getDoctorID()));
+                referralDetailDto.setTargetOrgName(orgDictRepository.findOrgNameByOrgCode(referralRecord.getOrgCode()));
                 result.setData(referralDetailDto);
             });
             return result;

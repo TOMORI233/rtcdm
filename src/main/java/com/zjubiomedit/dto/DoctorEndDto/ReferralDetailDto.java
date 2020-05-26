@@ -26,6 +26,6 @@ public class ReferralDetailDto {
     private String refuseReason;
     private String receipt;
 
-    private String doctorName;
-    private String orgName;
+    private String targetDoctorName;
+    private String targetOrgName;
 }
