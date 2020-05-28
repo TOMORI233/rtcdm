@@ -86,7 +86,7 @@ public class ManageServiceImpl implements ManageService {
                     managedPatientIndexRepository.save(newIndex);
                     // 修改PatientUserAuths表用户状态
                     Optional<PatientUserAuths> thisPatientOptional = patientUserAuthsRepository.findByUserID(patientID);
-                    thisPatientOptional.ifPresent(thisPatient->{
+                    thisPatientOptional.ifPresent(thisPatient -> {
                         thisPatient.setStatus(Utils.USER_ACTIVE);
                         patientUserAuthsRepository.save(thisPatient);
                     });
@@ -110,6 +110,9 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public Result pagingPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset) {
+        if (pageOffset <= 0 || pageIndex <= 0) {
+            return new Result();
+        }
         try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
             List<AlertBaseInfo> baseList = alertRecordRepository.findAlertPageByViewerIDAndStatus(viewerID, Utils.ALERT_UNPROCESSED);
@@ -137,7 +140,7 @@ public class ManageServiceImpl implements ManageService {
             int fromIndex = pageOffset * (pageIndex - 1);
             int toIndex = pageList.size();
             if (fromIndex > pageList.size() - 1) { // 页面范围超出数据范围
-                return new Result(ErrorEnum.E_501);
+                return new Result();
             } else if (toIndex >= pageOffset * pageIndex) { // fromIndex包括, toIndex不包括
                 toIndex = pageOffset * pageIndex;
             }
@@ -215,7 +218,7 @@ public class ManageServiceImpl implements ManageService {
             ReferralRecord newRecord = new ReferralRecord();
             BeanUtils.copyProperties(referralApplyDto, newRecord);
             ReferralRecord saveRecord = referralRecordRepository.save(newRecord);
-            Optional<AlertRecord> optional = alertRecordRepository.findBySerialNoAndStatus(referralApplyDto.getAlertSerialNo(),Utils.ALERT_UNPROCESSED);
+            Optional<AlertRecord> optional = alertRecordRepository.findBySerialNoAndStatus(referralApplyDto.getAlertSerialNo(), Utils.ALERT_UNPROCESSED);
             optional.ifPresent(alertRecord -> {
                 alertRecord.setStatus(Utils.ALERT_REFERRAL);
                 alertRecord.setExecuteDoctorID(referralApplyDto.getInitiator());
@@ -503,6 +506,9 @@ public class ManageServiceImpl implements ManageService {
 
     @Override
     public Result pagingReferralPatientAlert(Long viewerID, Integer pageIndex, Integer pageOffset) {
+        if (pageOffset <= 0 || pageIndex <= 0) {
+            return new Result();
+        }
         try {
             Pageable pageable = PageRequest.of(pageIndex - 1, pageOffset, Sort.Direction.DESC, "alertTime");
             List<AlertBaseInfo> baseList = alertRecordRepository.findReferralAlertPageByViewerIDAndStatus(viewerID, Utils.ALERT_UNPROCESSED);
