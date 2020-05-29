@@ -18,6 +18,7 @@ import com.zjubiomedit.service.UserService;
 import com.zjubiomedit.util.Result;
 import com.zjubiomedit.util.Utils;
 import com.zjubiomedit.util.enums.ErrorEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -109,6 +110,8 @@ public class UserServiceImpl implements UserService {
                 BeanUtils.copyProperties(managedPatientIndex, manageDetailDto);
                 manageDetailDto.setDoctorName(doctorUserAuthsRepository.findDoctorNameByDoctorID(managedPatientIndex.getDoctorID()));
                 manageDetailDto.setOrgName(orgDictRepository.findOrgNameByDoctorID(managedPatientIndex.getDoctorID()));
+                Optional<COPDManageDetail> detailOptional = copdManageDetailRepository.findByPatientID(managedPatientIndex.getPatientID());
+                detailOptional.ifPresent(copdManageDetail -> manageDetailDto.setManageLevel(copdManageDetail.getManageLevel()));
                 result.setCode(0);
                 result.setMessage("success");
                 result.setData(manageDetailDto);

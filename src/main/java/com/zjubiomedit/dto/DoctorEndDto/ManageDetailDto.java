@@ -28,4 +28,6 @@ public class ManageDetailDto {
 
     private String doctorName;
     private String orgName;
+
+    private Integer manageLevel;
 }
